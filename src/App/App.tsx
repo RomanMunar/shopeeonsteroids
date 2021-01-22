@@ -1,5 +1,8 @@
+import "./index.css"
+import { Router } from "react-router-dom"
+
 function App() {
-  return <div className="App">Hey</div>
+  return <Router></Router>
 }
 
 export default App
