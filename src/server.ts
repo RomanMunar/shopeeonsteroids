@@ -106,7 +106,9 @@ export const makeServer = ({ environment = "test" }) => {
     routes() {
       this.namespace = "api"
 
-      this.get("item")
+      this.get("/items", (schema) => {
+        return schema.all("item")
+      })
     },
 
     seeds(server) {

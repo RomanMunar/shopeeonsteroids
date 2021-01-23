@@ -3,6 +3,6 @@ import { Main } from "./Main"
 
 export const Routes = () => (
   <RoutesLib>
-    <Route path="/" element={<Main />} />
+    <Route path="*" element={<Main />} />
   </RoutesLib>
 )
