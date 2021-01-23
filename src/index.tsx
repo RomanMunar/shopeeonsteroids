@@ -9,7 +9,7 @@ if (environment !== "production") {
 }
 
 const render = () => {
-  const App = require("./App/App").default
+  const App = require("./App").App
 
   ReactDOM.render(<App />, document.getElementById("root"))
 }
