@@ -1,6 +1,6 @@
-import { createServer, Model, Factory } from "miragejs"
-import faker from "faker"
-import { Item, ItemRating } from "./lib/types"
+import faker from "faker";
+import { createServer, Factory, Model } from "miragejs";
+import { Item, ItemRating, ShopBrief, ShopDetailed } from "./lib/types";
 
 export const makeServer = ({ environment = "test" }) => {
   return createServer({
@@ -9,21 +9,21 @@ export const makeServer = ({ environment = "test" }) => {
     factories: {
       item: Factory.extend<Partial<Item>>({
         get has_lowest_price_guarantee() {
-          return faker.random.boolean()
+          return faker.random.boolean();
         },
         get raw_discount() {
-          return faker.random.boolean() ? faker.random.number(95) : 0
+          return faker.random.boolean() ? faker.random.number(95) : 0;
         },
         get is_adult() {
-          return faker.random.boolean()
+          return faker.random.boolean();
         },
         get image() {
-          return faker.image.imageUrl(500, 500)
+          return faker.image.imageUrl(500, 500);
         },
         get images() {
           return Array(faker.random.number(5))
             .fill(0)
-            .map((_) => faker.image.imageUrl(500, 500))
+            .map(() => faker.image.imageUrl(500, 500));
         },
         get item_rating() {
           const ratingRand = [
@@ -32,87 +32,104 @@ export const makeServer = ({ environment = "test" }) => {
             faker.random.number(20),
             faker.random.number(10),
             faker.random.number(10),
-          ]
+          ];
           const itemRating: ItemRating = {
             rating_count: ratingRand,
             rating_star: faker.random.float(5),
             rcount_with_context: faker.random.number(30),
             rcount_with_image: faker.random.number(20),
-          }
+          };
 
-          return itemRating
+          return itemRating;
         },
         get itemid() {
-          return faker.random.number(10000)
+          return faker.random.number(10000);
         },
         get name() {
-          return faker.internet.userName()
+          return faker.internet.userName();
         },
         get price_max() {
-          return faker.random.boolean() ? faker.random.number(40) * 100 : undefined
+          return faker.random.boolean() ? faker.random.number(40) * 100 : undefined;
         },
         get price_min() {
-          return faker.random.boolean() ? faker.random.number(40) * 100 : undefined
+          return faker.random.boolean() ? faker.random.number(40) * 100 : undefined;
         },
         get price() {
-          return faker.random.number(40) * 100
+          return faker.random.number(40) * 100;
         },
         get shop_location() {
-          return faker.fake("{{address.city}}, {{address.stateAbbr}} {{address.zipCode}}")
+          return faker.fake("{{address.city}}, {{address.stateAbbr}} {{address.zipCode}}");
         },
         get shopee_verified() {
-          return faker.random.boolean()
+          return faker.random.boolean();
         },
         get shopid() {
-          return faker.random.number()
+          return faker.random.number();
         },
         get sold() {
-          return faker.random.number(80)
+          return faker.random.number(80);
         },
         get tier_variations() {
           return faker.random.boolean()
             ? faker.random.boolean()
               ? Array(faker.random.number(5))
                   .fill(0)
-                  .map((_) => {
+                  .map(() => {
                     return {
                       images: Array(faker.random.number(5))
                         .fill(0)
-                        .map((_) => faker.image.imageUrl(500, 500)),
+                        .map(() => faker.image.imageUrl(500, 500)),
                       name: faker.commerce.productName(),
                       options: [
                         faker.commerce.productName(),
                         faker.commerce.productName(),
                         faker.commerce.productName(),
                       ],
-                    }
+                    };
                   })
               : undefined
-            : undefined
+            : undefined;
         },
         get liked_count() {
-          return faker.random.number(50)
+          return faker.random.number(50);
         },
         get brand() {
-          return faker.random.boolean() ? faker.company.companyName() : undefined
+          return faker.random.boolean() ? faker.company.companyName() : undefined;
         },
       }),
     },
 
     models: {
       item: Model.extend<Partial<Item>>({}),
+      item_rating: Model.extend<Partial<ItemRating>>({}),
+      shop: Model.extend<Partial<ShopDetailed>>({}),
+      shop_brief: Model.extend<Partial<ShopBrief>>({}),
     },
 
     routes() {
-      this.namespace = "api"
+      this.namespace = "api";
 
-      this.get("/items", (schema) => {
-        return schema.all("item")
-      })
+      this.get("/v2/search", (schema, req) => {
+        const query = req.queryParams;
+        console.log({ query });
+        return schema.all("item");
+      });
+
+      this.get("/v2/item/get", (schema) => {
+        return schema.all("item");
+      });
+
+      this.get("/v2/item/get_rating", (schema) => {
+        return schema.all("item");
+      });
+
+      this.get("/v2/shop/", (schema) => {
+        return schema.all("item");
+      });
     },
 
     seeds(server) {
-      server.createList("item", 20)
+      server.createList("item", 20);
     },
-  })
-}
+  });
+};
