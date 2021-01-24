@@ -1,14 +1,17 @@
 import { BrowserRouter } from "react-router-dom"
-import "./index.css"
 import { Routes } from "./Routes"
 import { ChakraProvider } from "@chakra-ui/react"
+import { Provider } from "react-redux"
+import store from "./store"
 
 function App() {
   return (
     <ChakraProvider resetCSS>
-      <BrowserRouter>
-        <Routes />
-      </BrowserRouter>
+      <Provider store={store}>
+        <BrowserRouter>
+          <Routes />
+        </BrowserRouter>
+      </Provider>
     </ChakraProvider>
   )
 }
