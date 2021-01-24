@@ -1,55 +1,63 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { AppThunk } from "src/App/store"
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { RootState } from "src/App/rootReducer";
+import { searchAPI } from "src/lib/api";
+import { Item, SearchQuery } from "src/lib/types";
 
-import { searchAPI } from "src/lib/api/searchAPI"
-import { Item, SearchQuery } from "src/lib/types"
-
-interface SearchState {
-  items: Item[]
-  loading: boolean
-  error: string | null
-}
-
-interface SearchLoaded {
-  items: Item[]
+export interface SearchState {
+  items: Item[];
+  fetchStatus: "fulfilled" | "pending" | "idle";
+  error: string | null | boolean;
+  query: SearchQuery;
 }
 
 const initialState: SearchState = {
   items: [],
-  loading: false,
+  fetchStatus: "idle",
   error: null,
-}
+  query: { keyword: "coffee" },
+};
+
+export const fetchSearch = createAsyncThunk<
+  Item[],
+  undefined,
+  { rejectValue: string; state: RootState }
+>("search/fetchSearch", async (_, { rejectWithValue, dispatch, getState }) => {
+  const { query } = getState().searchReducer;
+
+  dispatch(searchStart());
+  try {
+    const items = await searchAPI(query);
+    return items;
+  } catch (e) {
+    return rejectWithValue("Error");
+  }
+});
 
 const searchShopee = createSlice({
   name: "search",
   initialState,
   reducers: {
     searchStart(state) {
-      state.loading = true
-      state.error = null
-    },
-    searchSuccess(state, action: PayloadAction<SearchLoaded>) {
-      const { items } = action.payload
-      state.items = items
-      state.loading = false
-      state.error = null
-    },
-    searchFailure(state, action: PayloadAction<string>) {
-      state.loading = false
-      state.error = action.payload
+      state.fetchStatus = "pending";
     },
   },
-})
+  extraReducers: (builder) => {
+    builder.addCase(fetchSearch.fulfilled, (state, { payload: items }) => {
+      //remove past
+      console.log(items);
+      state.items = items;
+      state.fetchStatus = "fulfilled";
+    });
+    builder.addCase(fetchSearch.rejected, (state, { payload }) => {
+      state.fetchStatus = "idle";
+      if (payload) {
+        state.error = payload;
+      } else {
+        state.error = true;
+      }
+    });
+  },
+});
 
-export const { searchStart, searchSuccess, searchFailure } = searchShopee.actions
-export default searchShopee.reducer
-
-export const search = (query: SearchQuery): AppThunk => async (dispatch) => {
-  try {
-    dispatch(searchStart())
-    const items = await searchAPI(query)
-    dispatch(searchSuccess({ items }))
-  } catch (err) {
-    dispatch(searchFailure(err))
-  }
-}
+export const { searchStart } = searchShopee.actions;
+export default searchShopee.reducer;
