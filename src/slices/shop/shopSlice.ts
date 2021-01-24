@@ -1,54 +1,58 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { AppThunk } from "src/App/store"
-import { getShop } from "src/lib/api/searchAPI"
-import { ShopDetailed } from "src/lib/types"
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { getShop } from "src/lib/api";
+import { ShopDetailed } from "src/lib/types";
 
 interface SearchState {
-  shop: ShopDetailed | null
-  loading: boolean
-  error: string | null
+  shop: ShopDetailed | null;
+  fetchStatus: "fulfilled" | "pending" | "idle";
+  error: string | null | boolean;
 }
 
-interface ShopLoaded {
-  shop: ShopDetailed
-}
+export const fetchShop = createAsyncThunk<
+  ShopDetailed,
+  { shopid: number },
+  { rejectValue: string }
+>("search/fetchShop", async ({ shopid }, { rejectWithValue, dispatch }) => {
+  dispatch(shopStart());
+  try {
+    const items = await getShop({ shopid });
+    return items;
+  } catch (e) {
+    return rejectWithValue("Error");
+  }
+});
 
 const initialState: SearchState = {
   shop: null,
-  loading: false,
+  fetchStatus: "idle",
   error: null,
-}
+};
 
 const shopShopee = createSlice({
   name: "shop",
   initialState,
   reducers: {
     shopStart(state) {
-      state.loading = true
-      state.error = null
-    },
-    shopSuccess(state, action: PayloadAction<ShopLoaded>) {
-      const { shop } = action.payload
-      state.shop = shop
-      state.loading = false
-      state.error = null
-    },
-    shopFailure(state, action: PayloadAction<string>) {
-      state.loading = false
-      state.error = action.payload
+      state.fetchStatus = "pending";
+      state.error = null;
     },
   },
-})
+  extraReducers: (builder) => {
+    builder.addCase(fetchShop.fulfilled, (state, { payload: shop }) => {
+      //remove past
+      state.shop = shop;
+      state.fetchStatus = "fulfilled";
+    });
+    builder.addCase(fetchShop.rejected, (state, { payload }) => {
+      state.fetchStatus = "idle";
+      if (payload) {
+        state.error = payload;
+      } else {
+        state.error = true;
+      }
+    });
+  },
+});
 
-export const { shopStart, shopSuccess, shopFailure } = shopShopee.actions
-export default shopShopee.reducer
-
-export const shop = ({ shopid }: { shopid: number }): AppThunk => async (dispatch) => {
-  try {
-    dispatch(shopStart())
-    const shop = await getShop({ shopid })
-    dispatch(shopSuccess({ shop }))
-  } catch (err) {
-    dispatch(shopFailure(err))
-  }
-}
+export const { shopStart } = shopShopee.actions;
+export default shopShopee.reducer;
