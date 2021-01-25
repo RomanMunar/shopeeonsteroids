@@ -1,8 +1,8 @@
-import { BrowserRouter } from "react-router-dom"
-import { Routes } from "./Routes"
-import { ChakraProvider } from "@chakra-ui/react"
-import { Provider } from "react-redux"
-import store from "./store"
+import { BrowserRouter } from "react-router-dom";
+import { Routes } from "./Routes";
+import { ChakraProvider } from "@chakra-ui/react";
+import { Provider } from "react-redux";
+import store from "./store";
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
         </BrowserRouter>
       </Provider>
     </ChakraProvider>
-  )
+  );
 }
 
-export default App
+export default App;

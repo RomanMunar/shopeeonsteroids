@@ -1,22 +1,22 @@
-import queryString from "query-string"
-import { NowRequest, NowResponse } from "@vercel/node"
-import { shopeeUrlV4 } from "../../../constants"
-import { ShopeeShopDetailResponse } from "../../../src/lib/types/Api"
+import queryString from "query-string";
+import { NowRequest, NowResponse } from "@vercel/node";
+import { shopeeUrlV4 } from "../../../constants";
+import { ShopeeShopDetailResponse } from "../../../src/lib/types/Api";
 
 export default async (req: NowRequest, res: NowResponse) => {
-  const { shopid } = req.query
+  const { shopid } = req.query;
 
   if (!shopid) {
-    return res.status(400).json({ error: true, message: "Must have shop id" })
+    return res.status(400).json({ error: true, message: "Must have shop id" });
   }
 
   try {
-    const parsedQuery = queryString.stringify({ shopid })
+    const parsedQuery = queryString.stringify({ shopid });
     const response: ShopeeShopDetailResponse = await fetch(
       `${shopeeUrlV4}/get_shop_detail?${parsedQuery}`
-    ).then((res) => res.json())
+    ).then((res) => res.json());
 
-    const { data, error, error_msg } = response
+    const { data, error, error_msg } = response;
 
     const newData = {
       last_active_time: data.last_active_time,
@@ -47,10 +47,10 @@ export default async (req: NowRequest, res: NowResponse) => {
         portrait: data.account.portrait,
         total_avg_star: data.account.total_avg_star,
       },
-    }
+    };
 
-    return res.status(200).json({ data: newData, error, error_msg })
+    return res.status(200).json({ data: newData, error, error_msg });
   } catch (err) {
-    return res.status(500).json({ error_msg: "error", error: true })
+    return res.status(500).json({ error_msg: "error", error: true });
   }
-}
+};

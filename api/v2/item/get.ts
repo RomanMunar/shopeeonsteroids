@@ -1,20 +1,22 @@
-import { NowRequest, NowResponse } from "@vercel/node"
-import queryString from "query-string"
-import { shopeeUrlV2 } from "../../../constants"
-import { ShopeeItemDetailResponse } from "../../../src/lib/types/Api"
+import { NowRequest, NowResponse } from "@vercel/node";
+import queryString from "query-string";
+import { shopeeUrlV2 } from "../../../constants";
+import { ShopeeItemDetailResponse } from "../../../src/lib/types/Api";
 
 export default async (req: NowRequest, res: NowResponse) => {
-  const { itemid, shopid } = req.query
+  const { itemid, shopid } = req.query;
 
   if (!itemid || !shopid) {
-    return res.status(400).json({ error: true, message: "Must have shop and item ids" })
+    return res.status(400).json({ error: true, message: "Must have shop and item ids" });
   }
 
   try {
-    const parsedQuery = queryString.stringify({ itemid, shopid })
-    const response: ShopeeItemDetailResponse = await fetch(`${shopeeUrlV2}get?${parsedQuery}`).then((res) => res.json())
+    const parsedQuery = queryString.stringify({ itemid, shopid });
+    const response: ShopeeItemDetailResponse = await fetch(
+      `${shopeeUrlV2}get?${parsedQuery}`
+    ).then((res) => res.json());
 
-    const { item, error, error_msg } = response
+    const { item, error, error_msg } = response;
     const newData = {
       has_lowest_price_guarantee: item.has_lowest_price_guarantee,
       tier_variations: item.tier_variations.map((tier) => {
@@ -22,7 +24,7 @@ export default async (req: NowRequest, res: NowResponse) => {
           images: tier.images,
           name: tier.name,
           options: tier.options,
-        }
+        };
       }),
       liked_count: item.liked_count,
       is_adult: item.is_adult,
@@ -54,13 +56,13 @@ export default async (req: NowRequest, res: NowResponse) => {
           name: m.name,
           stock: m.stock,
           sold: m.sold,
-        }
+        };
       }),
-    }
+    };
 
-    res.status(200).json({ data: newData, error, error_msg })
+    res.status(200).json({ data: newData, error, error_msg });
   } catch (e) {
-    console.error("Engk! " + e.message)
-    res.status(500).send("Error")
+    console.error("Engk! " + e.message);
+    res.status(500).send("Error");
   }
-}
+};

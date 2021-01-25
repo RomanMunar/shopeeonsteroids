@@ -1,27 +1,27 @@
-import queryString from "query-string"
-import { NowRequest, NowResponse } from "@vercel/node"
-import fetch from "node-fetch"
-import { SellerLocation, Sort } from "../../src/lib/types"
-import { SearchResponse } from "../../src/lib/types/Api"
-import { shopeeUrlV2 } from "../../constants"
+import queryString from "query-string";
+import { NowRequest, NowResponse } from "@vercel/node";
+import fetch from "node-fetch";
+import { SellerLocation, Sort } from "../../src/lib/types";
+import { SearchResponse } from "../../src/lib/types/Api";
+import { shopeeUrlV2 } from "../../constants";
 // Already validated query from the client side,
 // but feel free to submit a pr, for revalidating these queries :)
 export default async (req: NowRequest, res: NowResponse) => {
   const query = req.query as {
-    by: Sort
-    keyword: string
-    limit: string
-    locations: SellerLocation
-    newest: string
-    minPrice: string
-    maxPrice: string
-    order: string
-  }
+    by: Sort;
+    keyword: string;
+    limit: string;
+    locations: SellerLocation;
+    newest: string; // limit * page == newest, like offset
+    minPrice: string;
+    maxPrice: string;
+    order: string;
+  };
   if (!query.keyword) {
-    return res.status(400).json({ error: true, message: "Must have keyword" })
+    return res.status(400).json({ error: true, message: "Must have keyword" });
   }
 
-  const parsedQuery = queryString.stringify(query)
+  const parsedQuery = queryString.stringify(query);
 
   try {
     const data: SearchResponse = await fetch(
@@ -33,13 +33,13 @@ export default async (req: NowRequest, res: NowResponse) => {
           "if-none-match-": "55b03-28973ef21cfd832b5433b48bb7d49c51",
         },
       }
-    ).then((res) => res.json())
+    ).then((res) => res.json());
 
     if (data.items === null) {
-      return res.status(400).json({ error_msg: "No Data found" })
+      return res.status(400).json({ error_msg: "No Data found" });
     }
 
-    const { error, error_msg, items } = data
+    const { error, error_msg, items } = data;
     const newItems = items.map((item) => ({
       has_lowest_price_guarantee: item.has_lowest_price_guarantee,
       itemid: item.itemid,
@@ -66,20 +66,20 @@ export default async (req: NowRequest, res: NowResponse) => {
           images: tier.images,
           name: tier.name,
           options: tier.options,
-        }
+        };
       }),
       liked_count: item.liked_count,
       is_adult: item.is_adult,
       raw_discount: item.raw_discount,
-    }))
+    }));
 
     res.status(200).json({
       error,
       error_msg,
       newItems,
-    })
+    });
   } catch (e) {
-    console.error("Engk! " + e.message)
-    res.status(500).send("Error")
+    console.error("Engk! " + e.message);
+    res.status(500).send("Error");
   }
-}
+};

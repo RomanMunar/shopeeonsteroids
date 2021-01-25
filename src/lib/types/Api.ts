@@ -1,30 +1,33 @@
-import { Item, ItemDetailed, Rating, SearchItem, ShopDetailed } from "."
+import { Item, ItemDetailed, Rating, SearchItem, ShopBrief, ShopDetailed } from ".";
 
 interface ShopeeResponse {
-  data?: any | null
-  error: number | string | null
-  error_msg: string | null
+  error: number | string | null;
+  error_msg: string | null;
 }
 
 export interface SearchResponse extends ShopeeResponse {
-  items: SearchItem[]
+  items: SearchItem[];
 }
 
 export interface ShopeeRatingResponse extends ShopeeResponse {
   data: {
-    item: Item
-    ratings: Rating[]
-  }
+    item: Item;
+    ratings: Rating[];
+  };
 }
 
 export interface ShopeeItemResponse extends ShopeeResponse {
-  item: Item
+  item: Item;
 }
 
 export interface ShopeeItemDetailResponse extends ShopeeResponse {
-  item: ItemDetailed
+  item: ItemDetailed;
 }
 
 export interface ShopeeShopDetailResponse extends ShopeeResponse {
-  data: ShopDetailed
+  data: ShopDetailed;
+}
+
+export interface ShopeeShopBriefResponse extends ShopeeResponse {
+  data: ShopBrief;
 }
