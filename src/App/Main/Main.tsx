@@ -1,23 +1,25 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Layout } from "src/components";
+import { fetchSearch } from "src/slices/search/searchSlice";
+import { RootState } from "../rootReducer";
 
 const Main = () => {
-  const [items, setItems] = useState()
+  const items = useSelector((state: RootState) => state.searchReducer.items);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchItems = async () =>
-      await fetch("/api/items")
-        .then((r) => r.json())
-        .then((data) => setItems(data))
-
-    fetchItems()
-  }, [])
+    dispatch(fetchSearch());
+  }, []);
 
   return (
     <div>
       <span>HEYLLOO</span>
       <pre>Hey{JSON.stringify(items, null, 2)}</pre>
     </div>
-  )
-}
+  );
+};
 
-export default Main
+Main.Layout = Layout;
+
+export default Main;
