@@ -1,17 +1,18 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "src/App/rootReducer";
+import { mockData } from "src/App/Search/mockData";
 import { searchAPI } from "src/lib/api";
-import { Item, SearchQuery, SellerLocation, Sort } from "src/lib/types";
+import { SearchItem, SearchQuery, SellerLocation, Sort } from "src/lib/types";
 
 export interface SearchState {
-  items: Item[];
+  items: SearchItem[];
   fetchStatus: "fulfilled" | "pending" | "idle";
   errors: string[];
   query: SearchQuery;
 }
 
 const initialState: SearchState = {
-  items: [],
+  items: mockData,
   fetchStatus: "idle",
   errors: [],
   query: {
@@ -28,7 +29,7 @@ const initialState: SearchState = {
 };
 
 export const fetchSearch = createAsyncThunk<
-  Item[],
+  SearchItem[],
   undefined,
   { rejectValue: string; state: RootState }
 >("search/fetchSearch", async (_, { rejectWithValue, dispatch, getState }) => {
@@ -114,7 +115,6 @@ const searchShopee = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchSearch.fulfilled, (state, { payload: items }) => {
       //remove past
-      console.log(items);
       state.items = items;
       state.fetchStatus = "fulfilled";
     });
