@@ -1,9 +1,8 @@
 import { Box, Text, VStack } from "@chakra-ui/react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const nav = () => {
   const navigate = useNavigate();
-  const { pathname: url } = useLocation();
   const toMain = () => navigate("/");
   const toSearch = () => navigate("/search");
   const toBookmarks = () => navigate("/bookmarks");
@@ -80,7 +79,7 @@ const nav = () => {
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
+            strokeWidth={1.5}
             d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
