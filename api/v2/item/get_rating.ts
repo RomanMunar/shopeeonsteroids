@@ -12,6 +12,7 @@ export default async (req: NowRequest, res: NowResponse) => {
     offset: string;
     type: string;
     filter: string;
+    limit: string;
   };
   // &type=0 All
   // &type=5 5 stars only
@@ -35,7 +36,7 @@ export default async (req: NowRequest, res: NowResponse) => {
         comment: rating.comment,
         images: rating.images,
         rating_star: rating.rating_star,
-        product_items: rating.product_items,
+        product_items: { modelName: rating.product_items.modelname },
         tags: rating.tags,
       };
     });
