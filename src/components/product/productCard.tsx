@@ -3,50 +3,56 @@ import { AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useIntersection } from "src/lib/hooks";
 import { SearchItem } from "src/lib/types";
-import { SelectedItem } from "src/slices";
+import { kFormat } from "src/lib/utils";
 import { LazyBox, MotionBox } from "..";
 
 interface Props {
   item: SearchItem;
   addToSelectedItems: (item: SearchItem) => void;
-  removeToSelectedItems: (selectedItem: SelectedItem | SearchItem) => void;
+  removeToSelectedItems: (selectedItem: any & { itemid: number; shopid: number }) => void;
+  selected: boolean;
 }
 
-const productCard = ({ item, addToSelectedItems, removeToSelectedItems }: Props) => {
+const productCard = ({ item, addToSelectedItems, removeToSelectedItems, selected }: Props) => {
   const [mounted, setMounted] = useState(false);
-  const [selected, setSelected] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [renderImage, setRenderImage] = useState(false);
   const intersectionRef = useRef(null);
   const intersection = useIntersection(intersectionRef);
   useEffect(() => {
     setMounted(true);
   }, []);
+  useEffect(() => {
+    if (!mounted) return;
+    if (!intersection) return;
+    if (intersection.intersectionRatio >= 1) {
+      setRenderImage(true);
+    }
+  }, [intersection]);
 
   const onClick = () => {
-    selected ? setSelected(false) : setSelected(true);
     selected ? removeToSelectedItems(item) : addToSelectedItems(item);
   };
 
   return (
     <MotionBox
       position="relative"
-      whileHover={{ translateY: -10 }}
-      whileTap={{ scale: 0.95 }}
+      whileTap={{ scale: 0.97 }}
+      animate={{ y: hovered && !selected ? -10 : 0 }}
       bg="white"
-      w="170px"
+      w="160px"
       onClick={onClick}
       m={2}
       border="2px"
       rounded="md"
-      borderColor={selected ? "green.200" : "gray.50"}
-      shadow="sm"
+      borderColor={selected ? "green.200" : "gray.100"}
+      shadow={hovered ? "md" : "sm"}
       overflow="hidden"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       layoutId={`card-container-${item.itemid}`}>
       <Box ref={intersectionRef} position="relative" width="100%" paddingTop="100%">
-        <LazyBox
-          load={intersection ? (mounted ? intersection.intersectionRatio >= 1 : false) : false}>
+        <LazyBox load={renderImage}>
           <Box
             as="img"
             position="absolute"
@@ -70,7 +76,7 @@ const productCard = ({ item, addToSelectedItems, removeToSelectedItems }: Props)
               ₱{item.price / 100000}
             </Text>
             <Text fontSize="sm" lineHeight="1rem" noOfLines={2}>
-              {item.sold}
+              {kFormat(item.sold)}
             </Text>
           </Flex>
           <Flex my="1" alignItems="center" justifyContent="space-between">
