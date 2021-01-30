@@ -1,42 +1,83 @@
-import { Box, Flex, Heading, Select, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Skeleton, StackDivider, Text, VStack } from "@chakra-ui/react";
+import { SelectedItemCard } from "src/components/product";
+import { SelectedItem } from "src/slices";
+import { SelectedItemDetailed } from "src/slices/selectedItems/selectedItemsSlice";
 
-const selectedItemsPanel = () => {
+interface Props {
+  selectedItems: (SelectedItem | SelectedItemDetailed)[];
+  isEmpty: boolean;
+  removeToSelectedItems: (selectedItem: any & { itemid: number; shopid: number }) => void;
+}
+
+const selectedItemsPanel = ({ selectedItems, removeToSelectedItems }: Props) => {
+  const selectedItemsLength = selectedItems.length;
+
   return (
     <Box flex="none" h="100vh" w="300px" overflowY="auto">
-      <Box borderBottom="1px" pb={3} borderColor="gray.300">
+      <Box pb={3}>
         <Heading as="h3" size="sm" p={4} alignSelf="start">
           SELECTED ITEMS
         </Heading>
         <Flex alignItems="center" justifyContent="space-between" px={4}>
-          <Text>5 items</Text>
+          <Text>{selectedItemsLength} items</Text>
           <Flex alignItems="center">
-            <Text whiteSpace="nowrap">Sort by</Text>
-            <Select w="auto" size="sm" placeholder="Time">
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
-            </Select>
+            <Button
+              size="sm"
+              whiteSpace="nowrap"
+              leftIcon={
+                <svg
+                  width="20px"
+                  height="20px"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              }>
+              Bookmark Items
+            </Button>
           </Flex>
         </Flex>
       </Box>
-      <VStack
-        shadow="inner"
-        flexGrow={1}
-        flexDirection="column"
-        w="full"
-        flexWrap="wrap"
-        display="flex"
-        p={4}
-        spacing="20px">
-        <Box h="130px" w="100%" p={5} mb={2} border="2px" rounded="md" borderColor="blue.500" />
-        <Box h="130px" w="100%" p={5} mb={2} border="2px" rounded="md" borderColor="blue.500" />
-        <Box h="130px" w="100%" p={5} mb={2} border="2px" rounded="md" borderColor="blue.500" />
-        <Box h="130px" w="100%" p={5} mb={2} border="2px" rounded="md" borderColor="blue.500" />
-        <Box h="130px" w="100%" p={5} mb={2} border="2px" rounded="md" borderColor="blue.500" />
-        <Box h="130px" w="100%" p={5} mb={2} border="2px" rounded="md" borderColor="blue.500" />
-        <Box h="130px" w="100%" p={5} mb={2} border="2px" rounded="md" borderColor="blue.500" />
-        <Box h="130px" w="100%" p={5} mb={2} border="2px" rounded="md" borderColor="blue.500" />
-      </VStack>
+      <Box borderY="1px" borderColor="gray.200" bg="gray.50" h="full" w="full">
+        <VStack
+          borderY="1px"
+          borderColor="gray.200"
+          w="full"
+          shadow="inner"
+          flexGrow={1}
+          flexDirection="column"
+          flexWrap="wrap"
+          display="flex"
+          spacing="0px"
+          divider={<StackDivider borderColor="gray.300" />}>
+          {selectedItemsLength < 1 ? (
+            <Heading my="10" size="md">
+              Empty
+            </Heading>
+          ) : (
+            selectedItems.map((item) =>
+              item.fetchStatus !== "pending" ? (
+                <SelectedItemCard
+                  removeToSelectedItems={removeToSelectedItems}
+                  item={item}
+                  key={item.itemid}
+                />
+              ) : (
+                <Box p="4" w="100%">
+                  <Skeleton rounded="md" w="100%" h="100px" />
+                </Box>
+              )
+            )
+          )}
+        </VStack>
+      </Box>
     </Box>
   );
 };
