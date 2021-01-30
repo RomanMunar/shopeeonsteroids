@@ -13,7 +13,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { Search } from "src/components/icons";
 import { ProductCard, ProductSkeleton } from "src/components/product";
 import { SearchItem } from "src/lib/types";
@@ -29,6 +28,7 @@ interface Props {
   removeToSelectedItems: (selectedItem: any & { itemid: number; shopid: number }) => void;
   selectedItems: (SelectedItem | SelectedItemDetailed)[];
   search: () => void;
+  openComparePanel: () => void;
 }
 
 const searchPanel = ({
@@ -38,8 +38,8 @@ const searchPanel = ({
   removeToSelectedItems,
   selectedItems,
   search,
+  openComparePanel,
 }: Props) => {
-  const dispatch = useDispatch();
   const [mounted, setMounted] = useState(false);
   const selectedItemsIds = selectedItems.map((i) => i.itemid);
 
@@ -75,7 +75,7 @@ const searchPanel = ({
               mr="2"
               size="sm"
               colorScheme="blue"
-              onClick={() => dispatch(openComparePanel())}>
+              onClick={openComparePanel}>
               Compare Now
             </Button>
           </Flex>
