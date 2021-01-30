@@ -1,5 +1,8 @@
 import faker from "faker";
 import { createServer, Factory, Model } from "miragejs";
+import { mockData } from "./App/Search/mockData";
+import { mockItem } from "./App/Search/mockItemDetailed";
+import { mockShopBrief } from "./App/Search/mockShopBrief";
 import { Item, ItemRating, ShopBrief, ShopDetailed } from "./lib/types";
 
 export const makeServer = ({ environment = "test" }) => {
@@ -109,22 +112,20 @@ export const makeServer = ({ environment = "test" }) => {
     routes() {
       this.namespace = "api";
 
-      this.get("/v2/search", (schema, req) => {
-        const query = req.queryParams;
-        console.log({ query });
-        return schema.all("item");
+      this.get("/v2/search", () => {
+        return { items: mockData, error: false, error_msg: null };
       });
 
-      this.get("/v2/item/get", (schema) => {
-        return schema.all("item");
+      this.get("/v2/item/get", () => {
+        return { item: mockItem, error: false, error_msg: null };
       });
 
       this.get("/v2/item/get_rating", (schema) => {
         return schema.all("item");
       });
 
-      this.get("/v2/shop/", (schema) => {
-        return schema.all("item");
+      this.get("/v2/shop", () => {
+        return { data: mockShopBrief, error: false, error_msg: null };
       });
     },
 
