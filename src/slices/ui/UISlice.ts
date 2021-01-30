@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export type CompareLayout = "double" | "triple" | "all";
+export type CompareLayout = "double" | "triple";
 export type ModalView = "itemDisplay" | "help" | "guide" | "bookmarkForm";
 interface UIState {
   displayComparePanel: boolean;
@@ -83,9 +83,6 @@ export const UI = createSlice({
     tripleCompareLayout(state) {
       state.compareLayout = "triple";
     },
-    allCompareLayout(state) {
-      state.compareLayout = "all";
-    },
   },
 });
 
@@ -99,7 +96,6 @@ export const {
   showItemDisplayModal,
   doubleCompareLayout,
   tripleCompareLayout,
-  allCompareLayout,
   collapseFilterPanel,
   uncollapseFilterPanel,
   toggleFilterPanel,

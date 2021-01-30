@@ -18,7 +18,6 @@ import { ProductCard, ProductSkeleton } from "src/components/product";
 import { SearchItem } from "src/lib/types";
 import { SelectedItem } from "src/slices";
 import { SelectedItemDetailed } from "src/slices/selectedItems/selectedItemsSlice";
-import { openComparePanel } from "src/slices/ui/UISlice";
 
 interface Props {
   items: SearchItem[];
