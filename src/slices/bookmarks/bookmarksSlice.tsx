@@ -1,62 +1,64 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Item } from "src/lib/types";
-
-interface Bookmark {
-  id: number;
-  favorite: boolean;
-  title: string;
-  description: string;
-  items: Item[];
-}
+import { BookmarkItem } from "src/lib/types";
+import {
+  addLocalStorageBookmark,
+  getLocaleStorageBookmarks,
+  removeLocalStorageBookmark,
+  updateLocalStorageBookmark,
+} from "src/lib/utils/localStorage";
 
 interface BookmarksState {
-  bookmarks: Bookmark[];
+  bookmarks: BookmarkItem[];
   error: string | null;
 }
 
 const initialState: BookmarksState = {
-  bookmarks: [],
+  bookmarks: getLocaleStorageBookmarks(),
   error: null,
 };
 
-export const selectedItemsShopee = createSlice({
-  name: "selectedItems",
+export const bookmark = createSlice({
+  name: "bookmark",
   initialState,
   reducers: {
-    bookmarkItem(state, action: PayloadAction<{ item: Bookmark }>) {
+    addBookmarkItem(state, action: PayloadAction<{ item: BookmarkItem }>) {
       const { item } = action.payload;
-
+      addLocalStorageBookmark(item);
       state.bookmarks.push(item);
     },
-    unbookmarkItem(state, action: PayloadAction<{ bookmark: Bookmark }>) {
-      const { bookmark } = action.payload;
-      state.bookmarks.filter((i) => bookmark.id !== i.id);
+    removeBookmarkItem(state, action: PayloadAction<{ item: BookmarkItem }>) {
+      const { item } = action.payload;
+      removeLocalStorageBookmark(item);
+      state.bookmarks.filter((i) => item.id !== i.id);
     },
-    updateBookmarkTitle(state, action: PayloadAction<{ bookmark: Bookmark; newTitle: string }>) {
-      const { bookmark, newTitle } = action.payload;
-      const newBookmark = state.bookmarks.find((i) => bookmark.id === i.id);
+    updateBookmarkTitle(state, action: PayloadAction<{ item: BookmarkItem; newTitle: string }>) {
+      const { item, newTitle } = action.payload;
+      updateLocalStorageBookmark(item);
+      const newBookmark = state.bookmarks.find((i) => item.id === i.id);
       if (newBookmark) {
         newBookmark.title = newTitle;
       }
     },
     updateBookmarkDescription(
       state,
-      action: PayloadAction<{ bookmark: Bookmark; newDescription: string }>
+      action: PayloadAction<{ item: BookmarkItem; newDescription: string }>
     ) {
-      const { bookmark, newDescription } = action.payload;
-      const newBookmark = state.bookmarks.find((i) => bookmark.id === i.id);
+      const { item, newDescription } = action.payload;
+      updateLocalStorageBookmark(item);
+
+      const newBookmark = state.bookmarks.find((i) => item.id === i.id);
       if (newBookmark) {
         newBookmark.description = newDescription;
       }
     },
-    favoriteBookmark(state, action: PayloadAction<{ bookmark: Bookmark }>) {
+    favoriteBookmark(state, action: PayloadAction<{ bookmark: BookmarkItem }>) {
       const { bookmark } = action.payload;
       const favBookmark = state.bookmarks.find((i) => bookmark.id === i.id);
       if (favBookmark) {
         favBookmark.favorite = true;
       }
     },
-    unFavoriteBookmark(state, action: PayloadAction<{ bookmark: Bookmark }>) {
+    unfavoriteBookmark(state, action: PayloadAction<{ bookmark: BookmarkItem }>) {
       const { bookmark } = action.payload;
       const favBookmark = state.bookmarks.find((i) => bookmark.id === i.id);
       if (favBookmark) {
@@ -66,5 +68,11 @@ export const selectedItemsShopee = createSlice({
   },
 });
 
-export const { bookmarkItem, unbookmarkItem } = selectedItemsShopee.actions;
-export default selectedItemsShopee.reducer;
+export const {
+  addBookmarkItem,
+  removeBookmarkItem,
+  updateBookmarkDescription,
+  favoriteBookmark,
+  unfavoriteBookmark,
+} = bookmark.actions;
+export default bookmark.reducer;
