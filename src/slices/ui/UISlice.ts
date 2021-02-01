@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { getLocaleStorageSettings } from "src/lib/utils/localStorage";
 
 export type CompareLayout = "double" | "triple";
 export type ModalView = "itemDisplay" | "help" | "guide" | "bookmarkForm";
@@ -10,11 +11,13 @@ interface UIState {
   displayModal: boolean;
 }
 
+const localSettings = getLocaleStorageSettings();
+
 const initialState: UIState = {
   displayComparePanel: false,
-  isFilterPanelCollapsed: false,
-  compareLayout: "double",
-  modalView: "itemDisplay",
+  isFilterPanelCollapsed: localSettings.ui.filterPanelCollapsed,
+  compareLayout: localSettings.ui.compareLayout,
+  modalView: "bookmarkForm",
   displayModal: false,
 };
 
