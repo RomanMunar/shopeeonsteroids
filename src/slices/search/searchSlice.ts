@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "src/App/rootReducer";
-import { mockData } from "src/App/Search/mockData";
 import { searchAPI } from "src/lib/api";
-import { SearchItem, SearchQuery, SellerLocation, Sort } from "src/lib/types";
+import { searchItemLimitPerPage } from "src/lib/data/constants";
+import { SearchItem, SearchQuery, SellerLocation, SearchSort } from "src/lib/types";
+import { getLocaleStorageSettings } from "src/lib/utils/localStorage";
 
 export interface SearchState {
   items: SearchItem[];
@@ -11,20 +12,23 @@ export interface SearchState {
   query: SearchQuery;
 }
 
+const localSettings = getLocaleStorageSettings();
+
 const initialState: SearchState = {
-  items: mockData,
+  items: [],
   fetchStatus: "idle",
   errors: [],
   query: {
     keyword: "coffee",
-    minPrice: 0,
-    maxPrice: 0,
-    newest: 20,
-    limit: 20,
+    newest: 0,
+    limit: searchItemLimitPerPage,
     order: "desc",
-    by: "sales",
-    locations: "-2",
-    matchId: 0,
+    match_id: 0,
+    pay_cod: 0,
+    by: localSettings.search.searchSort,
+    locations: localSettings.search.sellerLocation,
+    shopee_verified: localSettings.search.shopeeVerifiedOnly ? 1 : 0,
+    rating_filter: localSettings.search.itemRatingOnly,
   },
 };
 
@@ -32,10 +36,9 @@ export const fetchSearch = createAsyncThunk<
   SearchItem[],
   undefined,
   { rejectValue: string; state: RootState }
->("search/fetchSearch", async (_, { rejectWithValue, dispatch, getState }) => {
+>("search/fetchSearch", async (_, { rejectWithValue, getState }) => {
   const { query } = getState().searchReducer;
 
-  dispatch(searchStart());
   try {
     const items = await searchAPI(query);
     return items;
@@ -48,25 +51,27 @@ const searchShopee = createSlice({
   name: "search",
   initialState,
   reducers: {
-    searchStart(state) {
-      state.fetchStatus = "pending";
-    },
     setPriceMin(state, { payload }: PayloadAction<{ priceMin: number }>) {
-      if (state.query.minPrice > state.query.maxPrice) {
+      if (
+        state.query.max_price &&
+        state.query.min_price &&
+        payload.priceMin > state.query.max_price
+      ) {
         state.errors.push("Mininum Price should be less than the maximum price");
         return;
       }
-      state.query.minPrice = payload.priceMin;
+      state.query.min_price = payload.priceMin;
     },
     setPriceMax(state, { payload }: PayloadAction<{ priceMax: number }>) {
-      if (state.query.maxPrice === 0) {
-        return;
-      }
-      if (state.query.minPrice > state.query.maxPrice) {
+      if (
+        state.query.max_price &&
+        state.query.min_price &&
+        state.query.min_price > payload.priceMax
+      ) {
         state.errors.push("Maximum Price should be greater than the minimum price");
         return;
       }
-      state.query.maxPrice = payload.priceMax;
+      state.query.max_price = payload.priceMax;
     },
     setKeyword(state, { payload }: PayloadAction<{ keyword: string }>) {
       if (payload.keyword === "") {
@@ -83,7 +88,14 @@ const searchShopee = createSlice({
       }
       state.query.newest = payload.pageNumber * state.query.limit;
     },
-    setSort(state, { payload }: PayloadAction<{ by: Sort }>) {
+    incrementPage(state) {
+      state.query.newest += state.query.limit;
+    },
+    decrementPage(state) {
+      if (state.query.newest <= 0) return;
+      state.query.newest -= state.query.limit;
+    },
+    setSort(state, { payload }: PayloadAction<{ by: SearchSort }>) {
       if (state.query.by === payload.by) {
         return;
       }
@@ -95,24 +107,44 @@ const searchShopee = createSlice({
       }
       state.query.order = payload.order;
     },
-    setLocation(state, { payload }: PayloadAction<{ location: SellerLocation | "-2" }>) {
-      // -2 === All
-      if (payload.location === "-2") {
-        state.query.locations = "-2";
-      } else if (state.query.locations !== "-2") {
+    setLocation(state, { payload }: PayloadAction<{ location: SellerLocation }>) {
+      const { location } = payload;
+      if (state.query.locations.includes(location)) {
+        state.query.locations = state.query.locations.filter((l) => l !== payload.location);
+      } else {
         state.query.locations.push(payload.location);
       }
     },
     setMatchId(state, { payload }: PayloadAction<{ matchId: number }>) {
-      // -2 === All
-      if (state.query.matchId === 0) {
+      if (state.query.match_id === 0) {
         return;
       }
 
-      state.query.matchId = payload.matchId;
+      state.query.match_id = payload.matchId;
+    },
+    toggleShopeeVerifiedOnly(state) {
+      if (state.query.shopee_verified === 0) {
+        state.query.shopee_verified = 1;
+      } else {
+        state.query.shopee_verified = 0;
+      }
+    },
+    toggleCODOnly(state) {
+      if (state.query.pay_cod === 0) {
+        state.query.pay_cod = 1;
+      } else {
+        state.query.pay_cod = 0;
+      }
+    },
+    setRatingFilter(state, { payload }: PayloadAction<{ star: number }>) {
+      const { star } = payload;
+      state.query.rating_filter = star;
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchSearch.pending, (state) => {
+      state.fetchStatus = "pending";
+    });
     builder.addCase(fetchSearch.fulfilled, (state, { payload: items }) => {
       //remove past
       state.items = items;
@@ -130,14 +162,18 @@ const searchShopee = createSlice({
 });
 
 export const {
-  searchStart,
   setPriceMin,
   setPriceMax,
   setKeyword,
   setPage,
+  incrementPage,
+  decrementPage,
   setSort,
   setOrder,
   setLocation,
   setMatchId,
+  setRatingFilter,
+  toggleShopeeVerifiedOnly,
+  toggleCODOnly,
 } = searchShopee.actions;
 export default searchShopee.reducer;
