@@ -5,6 +5,7 @@ import {
   ItemReducer,
   shopReducer,
   UIReducer,
+  bookmarkReducer
 } from "src/slices";
 
 const rootReducer = combineReducers({
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   ItemReducer,
   shopReducer,
   UIReducer,
+  bookmarkReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
