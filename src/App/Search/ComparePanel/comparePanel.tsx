@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Flex, Heading, IconButton, useToast } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, Heading, IconButton } from "@chakra-ui/react";
 import { MotionBox } from "src/components";
 import { CompareProductCard } from "src/components/product";
 import { RatingQuery } from "src/lib/types";
@@ -11,7 +11,7 @@ interface Props {
   display: boolean;
   fetchItemDetails: (item: SelectedItem | SelectedItemDetailed) => void;
   fetchShop: (item: SelectedItem | SelectedItemDetailed) => void;
-  fetchRatings: (ratingQuery: RatingQuery) => void;
+  fetchRatings: (ratingQuery: RatingQuery, reset?: boolean) => void;
   closePanel: () => void;
   swapFirstAndSecond: () => void;
   toDoubleLayout: () => void;
@@ -30,22 +30,11 @@ const comparePanel = ({
   toTripleLayout,
   layout,
 }: Props) => {
-  const atleast3ItemsWarning = () =>
-    useToast({
-      position: "top",
-      title: "Add more",
-      description: "Must have atleast three items to use three-item layout.",
-      status: "warning",
-      duration: 4000,
-      isClosable: true,
-    });
-
   return (
     <MotionBox
       animate={{ y: display ? "calc(-100% - 2px)" : 0 }}
       borderTop="2px"
       borderColor="gray.400"
-      transitionDuration="0.2s"
       w="full"
       top="100%"
       left="0"
@@ -90,7 +79,7 @@ const comparePanel = ({
                   }
                 />
                 <IconButton
-                  onClick={selectedItems.length <= 2 ? atleast3ItemsWarning : toTripleLayout}
+                  onClick={toTripleLayout}
                   aria-label="triple item layout"
                   icon={
                     <svg
