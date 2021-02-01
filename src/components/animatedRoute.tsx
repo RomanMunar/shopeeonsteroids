@@ -14,7 +14,12 @@ const animatedRoute = ({ path, element }: Props) => {
   return (
     <AnimatePresence>
       {match && (
-        <MotionBox initial={{ x: "-50vh" }} animate={{ x: 0 }} exit={{ x: "50vh" }}>
+        <MotionBox
+        // initial={{ x: "-100vh" }}
+        // animate={{ x: 0 }}
+        // exit={{ x: "100vh" }} // @ts-ignore
+        // transition={{ type: "just", duration: 0.4 }}
+        >
           <Route path={path} element={element} />
         </MotionBox>
       )}
