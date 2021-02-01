@@ -1,21 +1,25 @@
 import queryString from "query-string";
 import { NowRequest, NowResponse } from "@vercel/node";
 import fetch from "node-fetch";
-import { SellerLocation, Sort } from "../../src/lib/types";
+import { SellerLocation, SearchSort } from "../../src/lib/types";
 import { SearchResponse } from "../../src/lib/types/Api";
 import { shopeeUrlV2 } from "../../constants";
 // Already validated query from the client side,
 // but feel free to submit a pr, for revalidating these queries :)
 export default async (req: NowRequest, res: NowResponse) => {
   const query = req.query as {
-    by: Sort;
+    locations: SellerLocation;
+    by: SearchSort;
     keyword: string;
     limit: string;
-    locations: SellerLocation;
     newest: string; // limit * page == newest, like offset
-    minPrice: string;
-    maxPrice: string;
     order: string;
+    min_price: string;
+    max_price: string;
+    match_id: string;
+    rating_filter: string;
+    pay_cod: string;
+    shopee_verified: string;
   };
   if (!query.keyword) {
     return res.status(400).json({ error: true, message: "Must have keyword" });
