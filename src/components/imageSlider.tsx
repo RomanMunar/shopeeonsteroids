@@ -51,10 +51,16 @@ export const imageSlider = ({ images }: Props) => {
       position="relative">
       <Box w="300px" h="300px">
         <AnimatePresence initial={false} custom={direction}>
-          <motion.img
-            style={{ position: "absolute", top: 0, width: "300px", height: "300px" }}
+          <motion.div
+            style={{
+              position: "absolute",
+              top: 0,
+              width: "300px",
+              height: "300px",
+              backgroundSize: "cover",
+              backgroundImage: `url(${images[imageIndex]})`,
+            }}
             key={page}
-            src={images[imageIndex]}
             custom={direction}
             variants={variants}
             initial="enter"
@@ -81,25 +87,25 @@ export const imageSlider = ({ images }: Props) => {
       <Box position="absolute" top="0" left="0" w="full" h="full" bg="gray.200" />
       <Box
         zIndex="2"
-        w="full"
         display="flex"
         position="absolute"
         bottom="0"
         left="0"
+        w="full"
         overflowX="scroll"
         px="4"
         bgGradient="linear(to-b, transparent, black)">
         {images.map((i, idx) => (
           <Box
+            as="img"
+            src={images[idx]}
             cursor="pointer"
             minW="60px"
-            minH="60px"
+            h="60px"
             mx="1"
             bg="white"
             border="2px"
             borderColor={page === idx ? "blue.300" : "gray.600"}
-            as="img"
-            src={images[idx]}
             onClick={() => setPage([idx, 1])}
             key={i}
           />
