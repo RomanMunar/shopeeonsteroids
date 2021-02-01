@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { BookmarkItem } from "src/lib/types";
+import { filterByUniqueField } from "src/lib/utils";
 import {
   addLocalStorageBookmark,
   getLocaleStorageBookmarks,
@@ -9,11 +10,15 @@ import {
 
 interface BookmarksState {
   bookmarks: BookmarkItem[];
+  displayedBookmark: BookmarkItem;
   error: string | null;
 }
 
+const filteredBookmarks = filterByUniqueField(getLocaleStorageBookmarks(), "id");
+
 const initialState: BookmarksState = {
-  bookmarks: getLocaleStorageBookmarks(),
+  bookmarks: filteredBookmarks,
+  displayedBookmark: filteredBookmarks[0],
   error: null,
 };
 
@@ -21,6 +26,10 @@ export const bookmark = createSlice({
   name: "bookmark",
   initialState,
   reducers: {
+    previewBookmark(state, action: PayloadAction<{ item: BookmarkItem }>) {
+      const { item } = action.payload;
+      state.displayedBookmark = item;
+    },
     addBookmarkItem(state, action: PayloadAction<{ item: BookmarkItem }>) {
       const { item } = action.payload;
       addLocalStorageBookmark(item);
@@ -51,16 +60,16 @@ export const bookmark = createSlice({
         newBookmark.description = newDescription;
       }
     },
-    favoriteBookmark(state, action: PayloadAction<{ bookmark: BookmarkItem }>) {
-      const { bookmark } = action.payload;
-      const favBookmark = state.bookmarks.find((i) => bookmark.id === i.id);
+    favoriteBookmark(state, action: PayloadAction<{ item: BookmarkItem }>) {
+      const { item } = action.payload;
+      const favBookmark = state.bookmarks.find((i) => item.id === i.id);
       if (favBookmark) {
         favBookmark.favorite = true;
       }
     },
-    unfavoriteBookmark(state, action: PayloadAction<{ bookmark: BookmarkItem }>) {
-      const { bookmark } = action.payload;
-      const favBookmark = state.bookmarks.find((i) => bookmark.id === i.id);
+    unfavoriteBookmark(state, action: PayloadAction<{ item: BookmarkItem }>) {
+      const { item } = action.payload;
+      const favBookmark = state.bookmarks.find((i) => item.id === i.id);
       if (favBookmark) {
         favBookmark.favorite = false;
       }
@@ -69,9 +78,11 @@ export const bookmark = createSlice({
 });
 
 export const {
+  previewBookmark,
   addBookmarkItem,
   removeBookmarkItem,
   updateBookmarkDescription,
+  updateBookmarkTitle,
   favoriteBookmark,
   unfavoriteBookmark,
 } = bookmark.actions;
