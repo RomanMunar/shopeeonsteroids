@@ -75,27 +75,27 @@ export const fetchShopBrief = createAsyncThunk<
 );
 
 export const fetchItemRatings = createAsyncThunk<
-  { ratings: Rating[]; itemid: number },
-  RatingQuery,
+  { ratings: Rating[]; itemid: number; reset: boolean },
+  { ratingQuery: RatingQuery; reset?: boolean },
   { rejectValue: ErrorValues; state: RootState }
 >(
   "selectedItems/fetchItemRatingsById",
-  async (ratingQuery, { rejectWithValue }) => {
+  async ({ ratingQuery, reset = false }, { rejectWithValue }) => {
     const { itemid, shopid } = ratingQuery;
 
     try {
       const ratings = await getRatings(ratingQuery);
-      return { ratings, itemid, shopid };
+      return { ratings, itemid, shopid, reset };
     } catch (err) {
       return rejectWithValue({
         message: err.message,
-        itemid: ratingQuery.itemid,
-        shopid: ratingQuery.shopid,
+        itemid,
+        shopid,
       });
     }
   },
   {
-    condition: ({ itemid }, { getState }) => {
+    condition: ({ ratingQuery: { itemid } }, { getState }) => {
       const { selectedItems } = getState().selectedItemsReducer;
       const item = selectedItems.find((i) => i.itemid === itemid);
       if (!item || item?.type !== "detailed") return false;
@@ -148,6 +148,12 @@ export const selectedItemsShopee = createSlice({
   name: "selectedItems",
   initialState,
   reducers: {
+    setSelectedItems(
+      state,
+      action: PayloadAction<{ items: (SelectedItem | SelectedItemDetailed)[] }>
+    ) {
+      state.selectedItems = action.payload.items;
+    },
     selectItem(state, action: PayloadAction<{ item: SearchItem }>) {
       if (state.isEmpty) state.isEmpty = false;
 
@@ -176,15 +182,27 @@ export const selectedItemsShopee = createSlice({
       const [firstEl, secondEl, ...rest] = state.selectedItems;
       state.selectedItems = [secondEl, firstEl, ...rest];
     },
-    fetchDetailedItemStart(state, action: PayloadAction<{ itemid: number }>) {
-      const item = state.selectedItems.find((i) => i.itemid === action.payload.itemid);
-      if (!item) return;
-      item.fetchStatus = "pending";
+    toFirst(state, action: PayloadAction<{ item: any & { itemid: number; shopid: number } }>) {
+      const { item } = action.payload;
+      const itemIndex = state.selectedItems.findIndex((i) => item.itemid === i.itemid);
+      if (itemIndex === -1) return;
+      state.selectedItems = [item, ...state.selectedItems.filter((i) => i.itemid !== item.itemid)];
     },
-    fetchItemRatingsStart(state, action: PayloadAction<{ itemid: number }>) {
-      const item = state.selectedItems.find((i) => i.itemid === action.payload.itemid);
-      if (!item) return;
-      item.ratings.fetchStatus = "pending";
+    toSecond(state, action: PayloadAction<{ item: any & { itemid: number; shopid: number } }>) {
+      const { item } = action.payload;
+      const itemIndex = state.selectedItems.findIndex((i) => item.itemid === i.itemid);
+      if (itemIndex === -1) return;
+      const [firstEl, ...rest] = state.selectedItems.filter((i) => i.itemid !== item.itemid);
+      state.selectedItems = [firstEl, item, ...rest];
+    },
+    toThird(state, action: PayloadAction<{ item: any & { itemid: number; shopid: number } }>) {
+      const { item } = action.payload;
+      const itemIndex = state.selectedItems.findIndex((i) => item.itemid === i.itemid);
+      if (itemIndex === -1) return;
+      const [firstEl, secondEl, ...rest] = state.selectedItems.filter(
+        (i) => i.itemid !== item.itemid
+      );
+      state.selectedItems = [firstEl, secondEl, item, ...rest];
     },
   },
   extraReducers: (builder) => {
@@ -254,29 +272,43 @@ export const selectedItemsShopee = createSlice({
       item.fetchStatus = "idle";
     });
     builder.addCase(fetchItemRatings.pending, (state, { meta: { arg } }) => {
-      const item = state.selectedItems.find((i) => i.itemid === arg.itemid);
+      const item = state.selectedItems.find((i) => i.itemid === arg.ratingQuery.itemid);
       if (!item) return;
       item.ratings.fetchStatus = "pending";
     });
     builder.addCase(fetchItemRatings.fulfilled, (state, { payload: item }) => {
-      const { ratings, itemid } = item;
+      const { ratings, itemid, reset } = item;
       const itemIndex = state.selectedItems.findIndex((i) => i.itemid === itemid);
 
       if (itemIndex === -1) {
         return;
       } else {
         const oldItem = state.selectedItems[itemIndex] as SelectedItemDetailed;
-        const newRatings: SelectedItemRatings = {
-          ratings: [...oldItem.ratings.ratings, ...ratings],
-          error: false,
-          fetchStatus: "fulfilled",
-        };
 
-        const newItem = {
-          ...oldItem,
-          ratings: newRatings,
-        } as SelectedItemDetailed;
-        state.selectedItems.splice(itemIndex, 1, newItem);
+        if (reset) {
+          // Resetting ratings for when we change type and filter queries
+          const newItem = {
+            ...oldItem,
+            ratings: {
+              ratings,
+              error: false,
+              fetchStatus: "fulfilled",
+            },
+          } as SelectedItemDetailed;
+
+          state.selectedItems.splice(itemIndex, 1, newItem);
+        } else {
+          const newItem = {
+            ...oldItem,
+            ratings: {
+              ratings: oldItem.ratings.ratings.concat(ratings),
+              error: false,
+              fetchStatus: "fulfilled",
+            },
+          } as SelectedItemDetailed;
+
+          state.selectedItems.splice(itemIndex, 1, newItem);
+        }
       }
     });
     builder.addCase(fetchItemRatings.rejected, (state, { payload }) => {
@@ -294,5 +326,13 @@ export const selectedItemsShopee = createSlice({
     });
   },
 });
-export const { selectItem, unselectItem, swapFirstAndSecondItems } = selectedItemsShopee.actions;
+export const {
+  setSelectedItems,
+  selectItem,
+  unselectItem,
+  swapFirstAndSecondItems,
+  toFirst,
+  toSecond,
+  toThird,
+} = selectedItemsShopee.actions;
 export default selectedItemsShopee.reducer;
