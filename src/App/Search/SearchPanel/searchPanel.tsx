@@ -9,13 +9,13 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Select,
   Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Search } from "src/components/icons";
 import { ProductCard, ProductSkeleton } from "src/components/product";
-import { SearchItem } from "src/lib/types";
+import { searchItemLimitPerPage, searchSort } from "src/lib/data/constants";
+import { SearchItem, SearchQuery, SearchSort } from "src/lib/types";
 import { SelectedItem } from "src/slices";
 import { SelectedItemDetailed } from "src/slices/selectedItems/selectedItemsSlice";
 
@@ -23,11 +23,17 @@ interface Props {
   items: SearchItem[];
   errors: string[];
   fetchStatus: "fulfilled" | "pending" | "idle";
+  selectedItems: (SelectedItem | SelectedItemDetailed)[];
+  query: SearchQuery;
   addToSelectedItems: (item: SearchItem) => void;
   removeToSelectedItems: (selectedItem: any & { itemid: number; shopid: number }) => void;
-  selectedItems: (SelectedItem | SelectedItemDetailed)[];
   search: () => void;
+  decrementPage: () => void;
   openComparePanel: () => void;
+  incrementPage: () => void;
+  setKeyword: (keyword: string) => void;
+  setSort: (by: SearchSort) => void;
+  setOrder: (order: "asc" | "desc") => void;
 }
 
 const searchPanel = ({
@@ -38,6 +44,10 @@ const searchPanel = ({
   selectedItems,
   search,
   openComparePanel,
+  query,
+  setSort,
+  incrementPage,
+  decrementPage,
 }: Props) => {
   const [mounted, setMounted] = useState(false);
   const selectedItemsIds = selectedItems.map((i) => i.itemid);
@@ -49,10 +59,17 @@ const searchPanel = ({
   }, []);
 
   return (
-    <Box flex="1" flexGrow={1} position="relative" w="full" h="full" overflowY="auto">
+    <Flex
+      flexDirection="column"
+      flex="1"
+      flexGrow={1}
+      position="relative"
+      w="full"
+      h="full"
+      overflowY="auto">
       <Box w="full" borderBottom="1px" borderColor="gray.300">
         <Box maxW="5xl" w="full" m="auto">
-          <Flex alignItems="center" justifyContent="space-between">
+          <Flex zIndex="20" alignItems="center" justifyContent="space-between">
             <Heading as="h3" p="4" size="sm" alignSelf="start">
               SEARCH
             </Heading>
@@ -89,31 +106,29 @@ const searchPanel = ({
               <HStack spacing={3}>
                 <Flex alignItems="center">
                   <Text mx="1" whiteSpace="nowrap">
-                    Price Range
-                  </Text>
-                  <Select size="sm" w="auto" placeholder="P0 - P5000">
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                  </Select>
-                </Flex>
-                <Flex alignItems="center">
-                  <Text mx="1" whiteSpace="nowrap">
                     Sort By
                   </Text>
-                  <Select size="sm" w="auto" placeholder="Sales">
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                  </Select>
+                  <ButtonGroup size="sm" variant="outline">
+                    {searchSort.map((s) => (
+                      <Button
+                        key={s}
+                        mx="0.5"
+                        textTransform="capitalize"
+                        color={query.by === s ? "blue.500" : "gray.800"}
+                        onClick={() => setSort(s)}>
+                        {s}
+                      </Button>
+                    ))}
+                  </ButtonGroup>
                 </Flex>
               </HStack>
               <Flex alignItems="center">
-                <Text mx="1">Page 1/4</Text>
+                <Text mx="1">Page {query.newest / searchItemLimitPerPage}</Text>
                 <ButtonGroup size="sm" isAttached variant="outline">
                   <IconButton
+                    onClick={decrementPage}
                     p={2}
-                    aria-label="Add to friends"
+                    aria-label="Previous Page"
                     icon={
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -130,6 +145,7 @@ const searchPanel = ({
                     }
                   />
                   <IconButton
+                    onClick={incrementPage}
                     p={2}
                     aria-label="Add to friends"
                     icon={
@@ -153,33 +169,43 @@ const searchPanel = ({
           </Box>
         </Box>
       </Box>
-      <Box w="full" shadow="inner" bg="gray.50">
-        <Box w="full" maxW="5xl">
-          <Flex w="full" top="0" bg="gray.50" alignItems="start" py={2} px={6} position="sticky">
-            <Text display="inline-block">Search results for &ldquo;Coffee&rdquo;</Text>
-          </Flex>
-          <Flex p={2} alignItems="center" flexDirection="row" w="full" flexWrap="wrap">
-            {mounted && fetchStatus !== "pending" ? (
-              items.map((m) => (
-                <ProductCard
-                  selected={selectedItemsIds.includes(m.itemid)}
-                  addToSelectedItems={addToSelectedItems}
-                  removeToSelectedItems={removeToSelectedItems}
-                  key={m.itemid}
-                  item={m}
-                />
-              ))
-            ) : (
-              <>
-                {Array(10).map((_, idx) => (
-                  <ProductSkeleton key={idx} />
+      <Box w="full" shadow="inner" bg="gray.50" flex="1">
+        <Box postion="relative" w="full" maxW="5xl">
+          {mounted && query.keyword === "" && fetchStatus === "idle" && (
+            <Flex flexDirection="column" alignItems="center" justifyContent="center" my="10">
+              <Heading mb="-10" size="md">
+                Try to Search for `Coffee`
+              </Heading>
+              <Box as="img" w="auto" h="400px" src="/gummy-coffee.png" alt="coffee cup" />
+            </Flex>
+          )}
+          {mounted && fetchStatus !== "pending" ? (
+            <>
+              <Flex w="full" bg="gray.50" alignItems="start" py={2} px={6} zIndex="20">
+                Search results for &ldquo;Coffee&rdquo;
+              </Flex>
+              <Flex p={2} alignItems="center" flexDirection="row" w="full" flexWrap="wrap">
+                {items.map((m) => (
+                  <ProductCard
+                    selected={selectedItemsIds.includes(m.itemid)}
+                    addToSelectedItems={addToSelectedItems}
+                    removeToSelectedItems={removeToSelectedItems}
+                    key={m.itemid}
+                    item={m}
+                  />
                 ))}
-              </>
-            )}
-          </Flex>
+              </Flex>
+            </>
+          ) : (
+            <Flex p={2} alignItems="center" flexDirection="row" w="full" flexWrap="wrap">
+              {Array(10).map((_, idx) => (
+                <ProductSkeleton key={idx} />
+              ))}
+            </Flex>
+          )}
         </Box>
       </Box>
-    </Box>
+    </Flex>
   );
 };
 
