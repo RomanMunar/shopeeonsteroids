@@ -1,3 +1,6 @@
+import { SelectedItem } from "src/slices";
+import { SelectedItemDetailed } from "src/slices/selectedItems/selectedItemsSlice";
+
 export interface Item {
   has_lowest_price_guarantee: boolean;
   raw_discount: number;
@@ -114,18 +117,21 @@ export type SellerLocation =
   | "Visayas"
   | "Mindanao";
 
-export type Sort = "relevancy" | "price" | "latest" | "sales";
+export type SearchSort = "relevancy" | "price" | "latest" | "sales";
 
 export interface SearchQuery {
   keyword: string;
   newest: number;
-  minPrice: number;
-  order: "asc" | "desc"; //Sort
-  by: Sort;
+  min_price?: number;
+  max_price?: number;
+  order: "asc" | "desc"; //SearchSort
+  by: SearchSort;
   limit: number;
-  locations: SellerLocation[] | "-2";
-  maxPrice: number;
-  matchId: number; // Category Id
+  locations: SellerLocation[];
+  match_id?: number; // Category Id
+  rating_filter: number;
+  pay_cod: number;
+  shopee_verified: number;
 }
 
 export interface RatingQuery {
@@ -134,4 +140,13 @@ export interface RatingQuery {
   offset: number;
   type: number;
   filter: number;
+  limit: number;
+}
+
+export interface BookmarkItem {
+  id: number;
+  favorite: boolean;
+  title: string;
+  description: string;
+  items: (SelectedItem | SelectedItemDetailed)[];
 }
