@@ -16,16 +16,71 @@ import {
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
+  Text,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { MotionBox } from "src/components";
+import {
+  compareLayouts,
+  itemRating,
+  lastActiveDays,
+  locations,
+  searchSort,
+} from "src/lib/data/constants";
+import { SearchQuery, SearchSort, SellerLocation } from "src/lib/types";
 
 interface Props {
   collapsed: boolean;
+  query: SearchQuery;
   toggleCollapse: () => void;
+  setPriceMin: (priceMin: number) => void;
+  setPriceMax: (priceMax: number) => void;
+  setLocation: (location: SellerLocation) => void;
+  setRatingFilter: (star: number) => void;
+  toggleCODOnly: () => void;
+  toggleShopeeVerifiedOnly: () => void;
 }
 
-const filterPanel = ({ collapsed, toggleCollapse }: Props) => {
+const filterPanel = ({
+  collapsed,
+  query,
+  toggleCollapse,
+  setLocation,
+  setRatingFilter,
+  setPriceMin,
+  setPriceMax,
+  toggleShopeeVerifiedOnly,
+  toggleCODOnly,
+}: Props) => {
+  const toast = useToast();
+  const [[minPrice, maxPrice], setPrice] = useState([query.min_price, query.max_price]);
+  const onPriceRangeSubmit = () => {
+    if (!minPrice || !maxPrice) return;
+
+    if (minPrice < maxPrice) {
+      toast({
+        position: "top",
+        description: "Maximum price can't be less than maximum price.",
+      });
+      return;
+    }
+    if (maxPrice < minPrice) {
+      toast({
+        position: "top",
+        description: "Minimum price can't be greater than maximum price.",
+      });
+      return;
+    }
+
+    if (minPrice > 0) {
+      setPriceMin(minPrice);
+    }
+    if (maxPrice > 0) {
+      setPriceMax(maxPrice);
+    }
+  };
   return (
     <Box borderRight="1px" borderColor="gray.300" position="relative" flex="none">
       <MotionBox
@@ -34,7 +89,7 @@ const filterPanel = ({ collapsed, toggleCollapse }: Props) => {
           overflow: collapsed ? "hidden" : "auto",
         }}
         // @ts-ignore
-        transition={{ type: "spring", duration: 0.2, delay: 0.1 }}
+        transition={{ type: "tween", duration: 0.2 }}
         display="flex"
         flexDirection="row"
         p="5"
@@ -47,7 +102,7 @@ const filterPanel = ({ collapsed, toggleCollapse }: Props) => {
             visibility: collapsed ? "hidden" : "visible",
           }}
           // @ts-ignore
-          transition={{ type: "spring", duration: 0.2 }}>
+          transition={{ type: "tween", duration: 0.2 }}>
           <Heading as="h3" size="sm">
             FILTER
           </Heading>
@@ -56,26 +111,58 @@ const filterPanel = ({ collapsed, toggleCollapse }: Props) => {
               <FormControl id="price">
                 <FormLabel>Shipped From</FormLabel>
                 <Flex flexDirection="column" alignItems="start" justifyContent="space-between">
-                  <Checkbox iconSize="1rem">Metro Manila</Checkbox>
-                  <Checkbox iconSize="1rem">South Luzon</Checkbox>
-                  <Checkbox iconSize="1rem">Mindanao</Checkbox>
-                  <Checkbox iconSize="1rem">Visayas</Checkbox>
-                  <Checkbox iconSize="1rem">All</Checkbox>
+                  {locations.map((l) => (
+                    <Checkbox
+                      key={l}
+                      isChecked={query.locations.includes(l)}
+                      onChange={() => setLocation(l)}>
+                      {l}
+                    </Checkbox>
+                  ))}
                 </Flex>
               </FormControl>
               <FormControl>
                 <FormLabel>Rating</FormLabel>
-                <Slider max={5} aria-label="slider-ex-1" defaultValue={3}>
-                  <SliderTrack>
-                    <SliderFilledTrack />
-                  </SliderTrack>
-                  <SliderThumb border="2px" p="8px" borderColor="blue.400" />
-                </Slider>
+                <Flex
+                  flexDirection="column-reverse"
+                  mx="auto"
+                  mb="4"
+                  w="full"
+                  alignItems="center"
+                  maxW="sm">
+                  {itemRating.map((rating, idx) => (
+                    <Flex key={idx} alignItems="center" justifyContent="start" w="full">
+                      <Checkbox
+                        key={rating}
+                        isChecked={query.rating_filter === rating}
+                        onChange={() => setRatingFilter(rating)}>
+                        <Flex alignItems="center" flexDirection="row">
+                          {rating}
+                          {[1, 2, 3, 4, 5].map((r) => (
+                            <svg
+                              key={r}
+                              width="15px"
+                              height="15px"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                              fill={r <= rating ? "#3182CE" : "#DADADA"}>
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}{" "}
+                          <Text size="xs">&UP</Text>
+                        </Flex>
+                      </Checkbox>
+                    </Flex>
+                  ))}
+                </Flex>
               </FormControl>
               <FormControl id="price">
                 <FormLabel>Price range</FormLabel>
                 <Flex alignItems="center" justifyContent="space-between">
-                  <NumberInput size="sm">
+                  <NumberInput
+                    size="sm"
+                    value={query.min_price}
+                    onChange={(e) => setPrice([parseInt(e), maxPrice])}>
                     <NumberInputField placeholder="Min" w="85px" />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
@@ -83,7 +170,10 @@ const filterPanel = ({ collapsed, toggleCollapse }: Props) => {
                     </NumberInputStepper>
                   </NumberInput>
                   <Divider mx={1} />
-                  <NumberInput size="sm">
+                  <NumberInput
+                    size="sm"
+                    value={query.max_price}
+                    onChange={(e) => setPrice([minPrice, parseInt(e)])}>
                     <NumberInputField placeholder="Max" w="85px" />
                     <NumberInputStepper>
                       <NumberIncrementStepper />
@@ -91,16 +181,27 @@ const filterPanel = ({ collapsed, toggleCollapse }: Props) => {
                     </NumberInputStepper>
                   </NumberInput>
                 </Flex>
-                <Button w="full" mt={2} colorScheme="blue" variant="outline">
+                <Button
+                  onClick={onPriceRangeSubmit}
+                  w="full"
+                  mt={2}
+                  colorScheme="blue"
+                  variant="outline">
                   Apply
                 </Button>
               </FormControl>
-              <FormControl id="price">
+              <FormControl>
                 <FormLabel>Shop Options</FormLabel>
                 <Flex flexDirection="column" alignItems="start" justifyContent="space-between">
-                  <Checkbox iconSize="1rem">Preffered Only</Checkbox>
+                  <Checkbox
+                    onChange={toggleShopeeVerifiedOnly}
+                    isChecked={query.shopee_verified === 0 ? false : true}>
+                    Preffered Only
+                  </Checkbox>
+                  <Checkbox onChange={toggleCODOnly} isChecked={query.pay_cod === 0 ? false : true}>
+                    COD Only
+                  </Checkbox>
                   <Checkbox iconSize="1rem">Active Last 3 days</Checkbox>
-                  <Checkbox iconSize="1rem">COD Only</Checkbox>
                 </Flex>
               </FormControl>
             </VStack>
