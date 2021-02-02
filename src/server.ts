@@ -1,9 +1,6 @@
 import faker from "faker";
 import { createServer, Factory, Model } from "miragejs";
-import { mockData } from "./App/Search/mockData";
-import { mockItem } from "./App/Search/mockItemDetailed";
-import { mockRatings } from "./App/Search/mockRatings";
-import { mockShopBrief } from "./App/Search/mockShopBrief";
+import { mockData, mockItemDetailed, mockRatings, mockShopBrief } from "./lib/data/mockData";
 import { Item, ItemRating, ShopBrief, ShopDetailed } from "./lib/types";
 
 export const makeServer = ({ environment = "test" }) => {
@@ -118,7 +115,7 @@ export const makeServer = ({ environment = "test" }) => {
       });
 
       this.get("/v2/item/get", () => {
-        return { item: mockItem, error: false, error_msg: null };
+        return { item: mockItemDetailed, error: false, error_msg: null };
       });
 
       this.get("/v2/item/get_rating", () => {
