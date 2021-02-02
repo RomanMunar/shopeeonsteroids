@@ -15,8 +15,8 @@ const localSettings = getLocaleStorageSettings();
 
 const initialState: UIState = {
   displayComparePanel: false,
-  isFilterPanelCollapsed: localSettings.ui.filterPanelCollapsed,
-  compareLayout: localSettings.ui.compareLayout,
+  isFilterPanelCollapsed: localSettings.filterPanelCollapsed,
+  compareLayout: localSettings.compareLayout,
   modalView: "bookmarkForm",
   displayModal: false,
 };
