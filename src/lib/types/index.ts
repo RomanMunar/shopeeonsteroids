@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { SelectedItem } from "src/slices";
 import { SelectedItemDetailed } from "src/slices/selectedItems/selectedItemsSlice";
 
@@ -149,4 +150,11 @@ export interface BookmarkItem {
   title: string;
   description: string;
   items: (SelectedItem | SelectedItemDetailed)[];
+}
+
+export interface Guide {
+  id: number;
+  title: string;
+  description: string;
+  body: ReactNode;
 }
