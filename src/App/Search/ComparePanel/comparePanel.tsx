@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Flex, Heading, IconButton } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, Heading, IconButton, Tooltip } from "@chakra-ui/react";
 import { MotionBox } from "src/components";
 import { CompareProductCard } from "src/components/product";
 import { RatingQuery } from "src/lib/types";
@@ -16,6 +16,7 @@ interface Props {
   swapFirstAndSecond: () => void;
   toDoubleLayout: () => void;
   toTripleLayout: () => void;
+  copyShopeeUrl: (item: any & { itemid: number; shopid: number; name: string }) => void;
 }
 
 const comparePanel = ({
@@ -29,6 +30,7 @@ const comparePanel = ({
   toDoubleLayout,
   toTripleLayout,
   layout,
+  copyShopeeUrl,
 }: Props) => {
   return (
     <MotionBox
@@ -40,7 +42,7 @@ const comparePanel = ({
       left="0"
       position="absolute"
       h="full"
-      zIndex="20"
+      zIndex="10"
       bg="white"
       overflowY="hidden">
       <Flex flexDirection="column" position="relative" h="full">
@@ -51,51 +53,57 @@ const comparePanel = ({
                 COMPARE
               </Heading>
               <ButtonGroup size="sm" isAttached>
-                <IconButton
-                  onClick={toDoubleLayout}
-                  aria-label="double item layout"
-                  icon={
-                    <svg
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <rect x="8" y="4" width="6" height="16" rx="2" />
-                      <rect x="14" y="4" width="6" height="16" rx="2" />
-                    </svg>
-                  }
-                />
-                <IconButton
-                  onClick={swapFirstAndSecond}
-                  aria-label="swap first and second items"
-                  icon={
-                    <svg height="20px" width="20px" viewBox="0 0 24 24">
-                      <path d="M4,9H17l-1.6,1.2a1,1,0,0,0-.2,1.4,1,1,0,0,0,.8.4,1,1,0,0,0,.6-.2l4-3a1,1,0,0,0,0-1.59l-3.86-3a1,1,0,0,0-1.23,1.58L17.08,7H4A1,1,0,0,0,4,9Z" />
-                      <path d="M20,16H7l1.6-1.2a1,1,0,0,0-1.2-1.6l-4,3a1,1,0,0,0,0,1.59l3.86,3a1,1,0,0,0,.61.21,1,1,0,0,0,.79-.39,1,1,0,0,0-.17-1.4L6.92,18H20a1,1,0,0,0,0-2Z" />
-                    </svg>
-                  }
-                />
-                <IconButton
-                  onClick={toTripleLayout}
-                  aria-label="triple item layout"
-                  icon={
-                    <svg
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <rect x="4" y="4" width="6" height="16" rx="2" />
-                      <rect x="10" y="4" width="6" height="16" rx="2" />
-                      <rect x="16" y="4" width="6" height="16" rx="2" />
-                    </svg>
-                  }
-                />
+                <Tooltip label="Double item layout">
+                  <IconButton
+                    onClick={toDoubleLayout}
+                    aria-label="double item layout"
+                    icon={
+                      <svg
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <rect x="8" y="4" width="6" height="16" rx="2" />
+                        <rect x="14" y="4" width="6" height="16" rx="2" />
+                      </svg>
+                    }
+                  />
+                </Tooltip>
+                <Tooltip label="Swap first and second item">
+                  <IconButton
+                    onClick={swapFirstAndSecond}
+                    aria-label="swap first and second items"
+                    icon={
+                      <svg height="20px" width="20px" viewBox="0 0 24 24">
+                        <path d="M4,9H17l-1.6,1.2a1,1,0,0,0-.2,1.4,1,1,0,0,0,.8.4,1,1,0,0,0,.6-.2l4-3a1,1,0,0,0,0-1.59l-3.86-3a1,1,0,0,0-1.23,1.58L17.08,7H4A1,1,0,0,0,4,9Z" />
+                        <path d="M20,16H7l1.6-1.2a1,1,0,0,0-1.2-1.6l-4,3a1,1,0,0,0,0,1.59l3.86,3a1,1,0,0,0,.61.21,1,1,0,0,0,.79-.39,1,1,0,0,0-.17-1.4L6.92,18H20a1,1,0,0,0,0-2Z" />
+                      </svg>
+                    }
+                  />
+                </Tooltip>
+                <Tooltip label="Triple item layout">
+                  <IconButton
+                    onClick={toTripleLayout}
+                    aria-label="triple item layout"
+                    icon={
+                      <svg
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <rect x="4" y="4" width="6" height="16" rx="2" />
+                        <rect x="10" y="4" width="6" height="16" rx="2" />
+                        <rect x="16" y="4" width="6" height="16" rx="2" />
+                      </svg>
+                    }
+                  />
+                </Tooltip>
               </ButtonGroup>
               <Button
                 leftIcon={
@@ -125,6 +133,7 @@ const comparePanel = ({
             <Flex justifyContent="center" overflow="hidden" h="85vh" m={5}>
               {selectedItems.slice(0, layout === "double" ? 2 : 3).map((si) => (
                 <CompareProductCard
+                  copyShopeeUrl={copyShopeeUrl}
                   fetchShop={fetchShop}
                   fetchRatings={fetchRatings}
                   fetchItemDetails={fetchItemDetails}
