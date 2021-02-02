@@ -19,8 +19,6 @@ interface Props {
   updateBookmarkDescription: (item: BookmarkItem, newDescription: string) => void;
   updateBookmarkTitle: (item: BookmarkItem, newTitle: string) => void;
   removeBookmarkItem: (item: BookmarkItem) => void;
-  favoriteBookmark: (item: BookmarkItem) => void;
-  unfavoriteBookmark: (item: BookmarkItem) => void;
 }
 
 const leftPanel = ({
@@ -30,8 +28,6 @@ const leftPanel = ({
   updateBookmarkDescription,
   updateBookmarkTitle,
   removeBookmarkItem,
-  favoriteBookmark,
-  unfavoriteBookmark,
 }: Props) => {
   return (
     <Flex
@@ -67,8 +63,6 @@ const leftPanel = ({
               updateBookmarkDescription={updateBookmarkDescription}
               updateBookmarkTitle={updateBookmarkTitle}
               removeBookmarkItem={removeBookmarkItem}
-              favoriteBookmark={favoriteBookmark}
-              unfavoriteBookmark={unfavoriteBookmark}
               active={i.id === displayedBookmark.id}
               item={i}
               previewBookmark={previewBookmark}
