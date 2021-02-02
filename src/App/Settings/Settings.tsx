@@ -17,26 +17,22 @@ import {
   locations,
   searchSort,
 } from "src/lib/data/constants";
-import { defaultSettings } from "src/lib/data/defaultSearchSettings";
+import { defaultSettings, Settings as ISettings } from "src/lib/data/defaultSearchSettings";
 import { getLocaleStorageSettings, setLocalStorageSettings } from "src/lib/utils/localStorage";
 import { CompareLayout } from "src/slices";
 
 const Settings = () => {
   const toast = useToast();
   const settings = getLocaleStorageSettings();
-  const [sessionLocation, setSessionLocation] = useState(settings.search.sellerLocation);
-  const [sessionRatingsAbove, setSessionRatingsAbove] = useState(settings.search.itemRatingOnly);
-  const [sessionSearchSort, setSessionSearchSort] = useState(settings.search.searchSort);
-  const [sessionCompareLayout, setSessionCompareLayout] = useState<CompareLayout>(
-    settings.ui.compareLayout
-  );
-  const [sessionFilterPanelCollpsed, setSessionFilterPanelCollpsed] = useState(
-    settings.ui.filterPanelCollapsed
-  );
-  const [sessionLastActiveDays, setSessionLastActiveDays] = useState(settings.seller.lastActive);
-  const [sessionFilterUnverified, setSessionFilterUnverified] = useState(
-    settings.search.shopeeVerifiedOnly
-  );
+  const [sessionSettings, setSessionSettings] = useState<ISettings>({
+    filterPanelCollapsed: settings.filterPanelCollapsed,
+    compareLayout: settings.compareLayout,
+    searchSort: settings.searchSort,
+    sellerLocation: settings.sellerLocation,
+    itemRatingOnly: settings.itemRatingOnly,
+    shopeeVerifiedOnly: settings.shopeeVerifiedOnly,
+    lastActive: settings.lastActive,
+  });
 
   const onSubmit = () => {
     toast({
@@ -45,19 +41,7 @@ const Settings = () => {
       title: "Changes saved successfully.",
       isClosable: true,
     });
-    setLocalStorageSettings({
-      search: {
-        sellerLocation: sessionLocation,
-        searchSort: sessionSearchSort,
-        itemRatingOnly: sessionRatingsAbove,
-        shopeeVerifiedOnly: sessionFilterUnverified,
-      },
-      seller: { lastActive: sessionLastActiveDays },
-      ui: {
-        compareLayout: sessionCompareLayout,
-        filterPanelCollapsed: sessionFilterPanelCollpsed,
-      },
-    });
+    setLocalStorageSettings(sessionSettings);
   };
 
   const onReset = () => {
@@ -67,13 +51,7 @@ const Settings = () => {
       title: "Reset Settings",
       isClosable: true,
     });
-    setSessionLocation(defaultSettings.search.sellerLocation);
-    setSessionRatingsAbove(defaultSettings.search.itemRatingOnly);
-    setSessionSearchSort(defaultSettings.search.searchSort);
-    setSessionCompareLayout(defaultSettings.ui.compareLayout);
-    setSessionFilterPanelCollpsed(defaultSettings.ui.filterPanelCollapsed);
-    setSessionLastActiveDays(defaultSettings.seller.lastActive);
-    setSessionFilterUnverified(defaultSettings.search.shopeeVerifiedOnly);
+    setSessionSettings(defaultSettings);
   };
 
   return (
@@ -98,13 +76,23 @@ const Settings = () => {
                   {locations.map((l) => (
                     <Checkbox
                       key={l}
-                      isChecked={sessionLocation.includes(l)}
+                      isChecked={sessionSettings.sellerLocation.includes(l)}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSessionLocation((p) => [l, ...p]);
+                          setSessionSettings((p) => {
+                            return {
+                              ...p,
+                              sellerLocation: [l, ...sessionSettings.sellerLocation],
+                            };
+                          });
                         } else {
-                          if (sessionLocation.length <= 1) return;
-                          setSessionLocation((p) => p.filter((i) => i !== l));
+                          if (sessionSettings.sellerLocation.length <= 1) return;
+                          setSessionSettings((p) => {
+                            return {
+                              ...p,
+                              sellerLocation: sessionSettings.sellerLocation.filter((i) => i !== l),
+                            };
+                          });
                         }
                       }}>
                       {l}
@@ -127,10 +115,12 @@ const Settings = () => {
                           </svg>
                         }
                         key={i}
-                        isChecked={sessionRatingsAbove === i}
+                        isChecked={sessionSettings.itemRatingOnly === i}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setSessionRatingsAbove(i);
+                            setSessionSettings((p) => {
+                              return { ...p, itemRatingOnly: i };
+                            });
                           }
                         }}>
                         {i}
@@ -145,10 +135,12 @@ const Settings = () => {
                       <Checkbox
                         textTransform="capitalize"
                         key={i}
-                        isChecked={sessionSearchSort === i}
+                        isChecked={sessionSettings.searchSort === i}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setSessionSearchSort(i);
+                            setSessionSettings((p) => {
+                              return { ...p, searchSort: i };
+                            });
                           }
                         }}>
                         {i}
@@ -170,10 +162,12 @@ const Settings = () => {
                   <Checkbox
                     key={i}
                     textTransform="capitalize"
-                    isChecked={sessionCompareLayout === i}
+                    isChecked={sessionSettings.compareLayout === i}
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setSessionCompareLayout(i);
+                        setSessionSettings((p) => {
+                          return { ...p, compareLayout: i };
+                        });
                       }
                     }}>
                     {i}
@@ -181,10 +175,12 @@ const Settings = () => {
                 ))}
                 <Checkbox
                   pt="2"
-                  isChecked={sessionFilterPanelCollpsed}
+                  isChecked={sessionSettings.filterPanelCollapsed}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      setSessionFilterPanelCollpsed(e.target.checked);
+                      setSessionSettings((p) => {
+                        return { ...p, filterPanelCollapsed: e.target.checked };
+                      });
                     }
                   }}>
                   Auto collapse filter panel
@@ -202,10 +198,12 @@ const Settings = () => {
                     <Checkbox
                       key={i}
                       textTransform="capitalize"
-                      isChecked={sessionLastActiveDays === i}
+                      isChecked={sessionSettings.lastActive === i}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSessionLastActiveDays(i);
+                          setSessionSettings((p) => {
+                            return { ...p, lastActive: i };
+                          });
                         }
                       }}>
                       {i} days
@@ -214,10 +212,12 @@ const Settings = () => {
                 </Stack>
                 <Checkbox
                   mt="4"
-                  isChecked={sessionFilterUnverified}
+                  isChecked={sessionSettings.shopeeVerifiedOnly}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      setSessionFilterUnverified(e.target.checked);
+                      setSessionSettings((p) => {
+                        return { ...p, shopeeVerifiedOnly: e.target.checked };
+                      });
                     }
                   }}>
                   Verified sellers only
