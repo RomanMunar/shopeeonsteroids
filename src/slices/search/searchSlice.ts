@@ -19,16 +19,16 @@ const initialState: SearchState = {
   fetchStatus: "idle",
   errors: [],
   query: {
-    keyword: "coffee",
+    keyword: "",
     newest: 0,
     limit: searchItemLimitPerPage,
     order: "desc",
     match_id: 0,
     pay_cod: 0,
-    by: localSettings.search.searchSort,
-    locations: localSettings.search.sellerLocation,
-    shopee_verified: localSettings.search.shopeeVerifiedOnly ? 1 : 0,
-    rating_filter: localSettings.search.itemRatingOnly,
+    by: localSettings.searchSort,
+    locations: localSettings.sellerLocation,
+    shopee_verified: localSettings.shopeeVerifiedOnly ? 1 : 0,
+    rating_filter: localSettings.itemRatingOnly,
   },
 };
 
@@ -52,25 +52,9 @@ const searchShopee = createSlice({
   initialState,
   reducers: {
     setPriceMin(state, { payload }: PayloadAction<{ priceMin: number }>) {
-      if (
-        state.query.max_price &&
-        state.query.min_price &&
-        payload.priceMin > state.query.max_price
-      ) {
-        state.errors.push("Mininum Price should be less than the maximum price");
-        return;
-      }
       state.query.min_price = payload.priceMin;
     },
     setPriceMax(state, { payload }: PayloadAction<{ priceMax: number }>) {
-      if (
-        state.query.max_price &&
-        state.query.min_price &&
-        state.query.min_price > payload.priceMax
-      ) {
-        state.errors.push("Maximum Price should be greater than the minimum price");
-        return;
-      }
       state.query.max_price = payload.priceMax;
     },
     setKeyword(state, { payload }: PayloadAction<{ keyword: string }>) {
@@ -82,29 +66,16 @@ const searchShopee = createSlice({
       }
       state.query.keyword = payload.keyword.trim().toLowerCase();
     },
-    setPage(state, { payload }: PayloadAction<{ pageNumber: number }>) {
-      if (payload.pageNumber === 0) {
-        return;
-      }
-      state.query.newest = payload.pageNumber * state.query.limit;
-    },
     incrementPage(state) {
       state.query.newest += state.query.limit;
     },
     decrementPage(state) {
-      if (state.query.newest <= 0) return;
       state.query.newest -= state.query.limit;
     },
     setSort(state, { payload }: PayloadAction<{ by: SearchSort }>) {
-      if (state.query.by === payload.by) {
-        return;
-      }
       state.query.by = payload.by;
     },
     setOrder(state, { payload }: PayloadAction<{ order: "asc" | "desc" }>) {
-      if (state.query.order === payload.order) {
-        return;
-      }
       state.query.order = payload.order;
     },
     setLocation(state, { payload }: PayloadAction<{ location: SellerLocation }>) {
@@ -165,7 +136,6 @@ export const {
   setPriceMin,
   setPriceMax,
   setKeyword,
-  setPage,
   incrementPage,
   decrementPage,
   setSort,

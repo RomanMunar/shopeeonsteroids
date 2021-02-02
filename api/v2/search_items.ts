@@ -80,7 +80,7 @@ export default async (req: NowRequest, res: NowResponse) => {
     res.status(200).json({
       error,
       error_msg,
-      newItems,
+      items: newItems,
     });
   } catch (e) {
     console.error("Engk! " + e.message);
