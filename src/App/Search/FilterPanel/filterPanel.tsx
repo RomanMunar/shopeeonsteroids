@@ -12,31 +12,19 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  Slider,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderTrack,
   Text,
-  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { MotionBox } from "src/components";
-import {
-  compareLayouts,
-  itemRating,
-  lastActiveDays,
-  locations,
-  searchSort,
-} from "src/lib/data/constants";
-import { SearchQuery, SearchSort, SellerLocation } from "src/lib/types";
+import { itemRating, locations } from "src/lib/data/constants";
+import { SearchQuery, SellerLocation } from "src/lib/types";
 
 interface Props {
   collapsed: boolean;
   query: SearchQuery;
   toggleCollapse: () => void;
-  setPriceMin: (priceMin: number) => void;
-  setPriceMax: (priceMax: number) => void;
+  setPriceRange: (priceMin?: number, priceMax?: number) => void;
   setLocation: (location: SellerLocation) => void;
   setRatingFilter: (star: number) => void;
   toggleCODOnly: () => void;
@@ -49,37 +37,13 @@ const filterPanel = ({
   toggleCollapse,
   setLocation,
   setRatingFilter,
-  setPriceMin,
-  setPriceMax,
+  setPriceRange,
   toggleShopeeVerifiedOnly,
   toggleCODOnly,
 }: Props) => {
-  const toast = useToast();
   const [[minPrice, maxPrice], setPrice] = useState([query.min_price, query.max_price]);
   const onPriceRangeSubmit = () => {
-    if (!minPrice || !maxPrice) return;
-
-    if (minPrice < maxPrice) {
-      toast({
-        position: "top",
-        description: "Maximum price can't be less than maximum price.",
-      });
-      return;
-    }
-    if (maxPrice < minPrice) {
-      toast({
-        position: "top",
-        description: "Minimum price can't be greater than maximum price.",
-      });
-      return;
-    }
-
-    if (minPrice > 0) {
-      setPriceMin(minPrice);
-    }
-    if (maxPrice > 0) {
-      setPriceMax(maxPrice);
-    }
+    setPriceRange(minPrice, maxPrice);
   };
   return (
     <Box borderRight="1px" borderColor="gray.300" position="relative" flex="none">
@@ -196,7 +160,7 @@ const filterPanel = ({
                   <Checkbox
                     onChange={toggleShopeeVerifiedOnly}
                     isChecked={query.shopee_verified === 0 ? false : true}>
-                    Preffered Only
+                    Verified Sellers Only
                   </Checkbox>
                   <Checkbox onChange={toggleCODOnly} isChecked={query.pay_cod === 0 ? false : true}>
                     COD Only
