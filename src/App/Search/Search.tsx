@@ -1,20 +1,20 @@
 import { Box, Flex, useToast } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { BookmarkItem, RatingQuery, SearchItem, SearchSort, SellerLocation } from "src/lib/types";
-import { addBookmarkItem } from "src/slices/bookmarks/bookmarksSlice";
+import { addBookmarkItem, setSelectedBookmarkedItems } from "src/slices/bookmarks/bookmarksSlice";
 import {
   fetchSearch,
   setPriceMin,
   setPriceMax,
-  setKeyword,
-  setSort,
-  setOrder,
-  setLocation,
-  setRatingFilter,
-  toggleShopeeVerifiedOnly,
-  toggleCODOnly,
-  incrementPage,
-  decrementPage,
+  setKeyword as keywordSet,
+  setLocation as locationSet,
+  setSort as sortSet,
+  setOrder as orderSet,
+  setRatingFilter as setFilterRating,
+  toggleShopeeVerifiedOnly as toggleVerifiedOnly,
+  toggleCODOnly as toggleCOD,
+  incrementPage as pageIncrement,
+  decrementPage as pageDecrement,
 } from "src/slices/search/searchSlice";
 import {
   fetchDetailedItem,
@@ -43,9 +43,13 @@ import { ComparePanel } from "./ComparePanel";
 import { FilterPanel } from "./FilterPanel";
 import { SearchPanel } from "./SearchPanel";
 import { SelectedItemsPanel } from "./SelectedItemsPanel";
+import useClippy from "use-clippy";
+import { useEffect } from "react";
+import { addLocalStorageBookmark, getLocaleStorageBookmarks } from "src/lib/utils/localStorage";
 
 const Search = () => {
   const toast = useToast();
+  const [, setClipboard] = useClippy();
   const dispatch = useDispatch();
   const {
     displayComparePanel,
@@ -57,7 +61,9 @@ const Search = () => {
   const { items, errors, fetchStatus, query } = useSelector(
     (state: RootState) => state.searchReducer
   );
-  const { isEmpty, selectedItems } = useSelector((state: RootState) => state.selectedItemsReducer);
+  const { isEmpty, selectedItems, sessionID, isFromBookmarks } = useSelector(
+    (state: RootState) => state.selectedItemsReducer
+  );
   const closeBookmarkForm = () => dispatch(modalClose());
   const openBookmarkForm = () => dispatch(showBookmarkFormModal());
   const addToBookmarks = (title: string, description: string) => {
@@ -65,6 +71,7 @@ const Search = () => {
       toast({
         position: "top",
         description: "Title field is required.",
+        isClosable: true,
       });
       return;
     }
@@ -91,6 +98,7 @@ const Search = () => {
       status: "success",
       title: "Bookmark added.",
       description: `${title} saved in your bookmarks`,
+      isClosable: true,
     });
     dispatch(modalClose());
   };
@@ -114,7 +122,6 @@ const Search = () => {
   const fetchRatings = (ratingQuery: RatingQuery, reset?: boolean) => {
     dispatch(fetchItemRatings({ ratingQuery, reset }));
   };
-
   const addToSelectedItems = (item: SearchItem) => {
     dispatch(selectItem({ item }));
   };
@@ -172,6 +179,73 @@ const Search = () => {
     }
     dispatch(unselectItem({ selectedItem }));
   };
+  const copyShopeeUrl = (item: any & { itemid: number; shopid: number; name: string }) => {
+    setClipboard(
+      `https://shopee.ph/${item.name.replace(/\s/gi, "-")}-i.${item.shopid}.${item.itemid}`
+    );
+    toast({
+      position: "top",
+      status: "success",
+      title: "Successfully copied url to your clipboard",
+      isClosable: true,
+    });
+  };
+  const setPriceRange = (priceMin?: number, priceMax?: number) => {
+    if (priceMax && priceMin) {
+      if (priceMin > priceMax) {
+        toast({
+          position: "top",
+          description: "Mininum Price should be less than the maximum price",
+          isClosable: true,
+          status: "warning",
+        });
+        return;
+      }
+      dispatch(setPriceMin({ priceMin }));
+      dispatch(setPriceMax({ priceMax }));
+    } else {
+      if (priceMin) {
+        dispatch(setPriceMin({ priceMin }));
+      }
+      if (priceMax) {
+        dispatch(setPriceMax({ priceMax }));
+      }
+    }
+  };
+  const setKeyword = (keyword: string) => {
+    if (keyword === "") {
+      return;
+    }
+    dispatch(keywordSet({ keyword }));
+  };
+  const setLocation = (location: SellerLocation) => dispatch(locationSet({ location }));
+  const setRatingFilter = (star: number) => dispatch(setFilterRating({ star }));
+  const toggleShopeeVerifiedOnly = () => dispatch(toggleVerifiedOnly());
+  const toggleCODOnly = () => dispatch(toggleCOD());
+  const setSort = (by: SearchSort) => dispatch(sortSet({ by }));
+  const setOrder = (order: "asc" | "desc") => dispatch(orderSet({ order }));
+  const incrementPage = () => dispatch(pageIncrement());
+  const decrementPage = () => {
+    if (query.newest <= 0) return;
+    dispatch(pageDecrement());
+  };
+  useEffect(() => console.log({ query }), [query]);
+  useEffect(() => {
+    if (isFromBookmarks) {
+      // Sync items if items are from a bookmark
+      dispatch(setSelectedBookmarkedItems({ id: sessionID, newItems: selectedItems }));
+    } else {
+      const date = new Date();
+      const sessionBookmark = {
+        title: `Unsaved Session`,
+        description: `Session from \`${date.toDateString()}\``,
+        id: sessionID,
+        items: selectedItems,
+        favorite: false,
+      };
+      addLocalStorageBookmark(sessionBookmark);
+    }
+  }, [selectedItems]);
 
   return (
     <Flex overflowY="hidden" h="100vh" w="full" flexDirection="row">
@@ -186,12 +260,11 @@ const Search = () => {
         <Box w="full" h="100vh">
           <Flex w="full" position="relative" flexDirection="row" overflowY="hidden" h="100vh">
             <FilterPanel
-              setPriceMin={(priceMin: number) => dispatch(setPriceMin({ priceMin }))}
-              setPriceMax={(priceMax: number) => dispatch(setPriceMax({ priceMax }))}
-              setLocation={(location: SellerLocation) => dispatch(setLocation({ location }))}
-              setRatingFilter={(star: number) => dispatch(setRatingFilter({ star }))}
-              toggleShopeeVerifiedOnly={() => dispatch(toggleShopeeVerifiedOnly())}
-              toggleCODOnly={() => dispatch(toggleCODOnly())}
+              setPriceRange={setPriceRange}
+              setLocation={setLocation}
+              setRatingFilter={setRatingFilter}
+              toggleShopeeVerifiedOnly={toggleShopeeVerifiedOnly}
+              toggleCODOnly={toggleCODOnly}
               query={query}
               collapsed={isFilterPanelCollapsed}
               toggleCollapse={toggleFilterPanelCollapse}
@@ -206,14 +279,15 @@ const Search = () => {
               items={items}
               search={search}
               query={query}
-              setKeyword={(keyword: string) => dispatch(setKeyword({ keyword }))}
-              setSort={(by: SearchSort) => dispatch(setSort({ by }))}
-              setOrder={(order: "asc" | "desc") => dispatch(setOrder({ order }))}
-              incrementPage={() => dispatch(incrementPage())}
-              decrementPage={() => dispatch(decrementPage())}
+              setKeyword={setKeyword}
+              setSort={setSort}
+              setOrder={setOrder}
+              incrementPage={incrementPage}
+              decrementPage={decrementPage}
             />
           </Flex>
           <ComparePanel
+            copyShopeeUrl={copyShopeeUrl}
             closePanel={closeComparePanel}
             fetchShop={fetchShop}
             fetchRatings={fetchRatings}
