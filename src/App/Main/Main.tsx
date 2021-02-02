@@ -1,8 +1,18 @@
+import { Flex } from "@chakra-ui/react";
+import { useState } from "react";
+import { Guide } from "src/lib/types";
+import { GuidePreviewPanel } from "./GuidePreviewPanel";
+import { GuidesPanel } from "./GuidesPanel";
+import { HowToBookmark, HowToUseCompare, HowToUseSearch } from "./guides";
 const Main = () => {
+  const guides = [HowToUseSearch, HowToBookmark, HowToUseCompare];
+  const [displayedGuide, previewGuide] = useState<Guide>(guides[0]);
+
   return (
-    <div>
-      <span>HEYLLOO</span>
-    </div>
+    <Flex flexDirection="row" overflow="hidden" h="100vh">
+      <GuidesPanel previewGuide={previewGuide} guides={guides} displayedGuide={displayedGuide} />
+      <GuidePreviewPanel displayedGuide={displayedGuide} />
+    </Flex>
   );
 };
 
