@@ -61,9 +61,10 @@ const nav = () => {
             <PopoverCloseButton />
             <PopoverBody>
               a Filipino Web Developer and UX Designer based in Philippines. I also write content
-              about software development toolings and frameworks. I&apos;m also looking for work,
-              <a href="https://romanmunar.netlify.app/about#contact-me">contact me</a> if
-              you&apos;re interested
+              about software development toolings and frameworks.
+              <a href="https://romanmunar.netlify.app/about#contact-me">
+                <Text color="blue.500">Contact Me</Text>
+              </a>
             </PopoverBody>
             <PopoverFooter>
               <Button

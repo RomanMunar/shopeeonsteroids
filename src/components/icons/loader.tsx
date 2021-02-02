@@ -5,6 +5,6 @@ const loader = ({ ...rest }) => (
       <path d="M12 3a9 9 0 0 1 9 9h-2a7 7 0 0 0-7-7V3z" />
     </g>
   </svg>
-)
+);
 
-export default loader
+export default loader;

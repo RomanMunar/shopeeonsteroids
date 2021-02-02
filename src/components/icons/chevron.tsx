@@ -1,9 +1,5 @@
 const chevron = ({ ...rest }) => (
-  <svg
-    {...rest}
-    viewBox="0 0 20 20"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg">
+  <svg {...rest} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -11,6 +7,6 @@ const chevron = ({ ...rest }) => (
       fill="currentColor"
     />
   </svg>
-)
+);
 
-export default chevron
+export default chevron;
