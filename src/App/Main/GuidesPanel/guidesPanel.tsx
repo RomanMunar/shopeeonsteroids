@@ -1,17 +1,16 @@
-import { Guide } from "src/lib/types";
 import {
+  Box,
   Flex,
   Heading,
-  Box,
   Input,
   InputGroup,
   InputLeftElement,
   StackDivider,
-  Text,
   VStack,
 } from "@chakra-ui/react";
 import { Search } from "src/components/icons";
 import { GuideItemCard } from "src/components/product";
+import { Guide } from "src/lib/types";
 
 interface Props {
   guides: Guide[];

@@ -2,8 +2,8 @@ import { Flex } from "@chakra-ui/react";
 import { useState } from "react";
 import { Guide } from "src/lib/types";
 import { GuidePreviewPanel } from "./GuidePreviewPanel";
-import { GuidesPanel } from "./GuidesPanel";
 import { HowToBookmark, HowToUseCompare, HowToUseSearch } from "./guides";
+import { GuidesPanel } from "./GuidesPanel";
 const Main = () => {
   const guides = [HowToUseSearch, HowToBookmark, HowToUseCompare];
   const [displayedGuide, previewGuide] = useState<Guide>(guides[0]);

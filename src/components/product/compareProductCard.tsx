@@ -16,7 +16,7 @@ import { AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useIntersection, usePrevious } from "src/lib/hooks";
 import { RatingQuery } from "src/lib/types";
-import { getRelativeTimeFormat, toLocaleTime, kFormat } from "src/lib/utils";
+import { getRelativeTimeFormat, kFormat, toLocaleTime } from "src/lib/utils";
 import { SelectedItem } from "src/slices";
 import { SelectedItemDetailed } from "src/slices/selectedItems/selectedItemsSlice";
 import { ImageSlider, MotionBox } from "..";

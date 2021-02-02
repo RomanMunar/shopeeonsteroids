@@ -1,7 +1,6 @@
-import { Box, Button, Flex, Heading, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { SelectedItemCard } from "src/components/product";
 import { BookmarkItem } from "src/lib/types";
-import { arrayToNArray } from "src/lib/utils";
 
 interface Props {
   displayedBookmark: BookmarkItem;

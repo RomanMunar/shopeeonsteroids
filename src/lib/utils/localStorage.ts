@@ -1,4 +1,4 @@
-import { BookmarkItem, SellerLocation } from "src/lib/types";
+import { BookmarkItem } from "src/lib/types";
 import { filterByUniqueField } from ".";
 import { defaultBookmarks } from "../data/defaultBookmark";
 import { defaultSettings, Settings } from "../data/defaultSearchSettings";

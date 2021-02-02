@@ -19,7 +19,6 @@ import {
 } from "src/lib/data/constants";
 import { defaultSettings, Settings as ISettings } from "src/lib/data/defaultSearchSettings";
 import { getLocaleStorageSettings, setLocalStorageSettings } from "src/lib/utils/localStorage";
-import { CompareLayout } from "src/slices";
 
 const Settings = () => {
   const toast = useToast();

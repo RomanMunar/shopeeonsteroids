@@ -1,5 +1,5 @@
+import { Box, ListItem, OrderedList, Text } from "@chakra-ui/react";
 import { Guide } from "src/lib/types";
-import { Box, Text, OrderedList, ListItem } from "@chakra-ui/react";
 
 const howToUseSearch: Guide = {
   id: 1,

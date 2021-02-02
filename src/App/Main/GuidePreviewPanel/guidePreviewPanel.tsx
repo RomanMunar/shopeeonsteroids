@@ -1,5 +1,5 @@
-import { Guide } from "src/lib/types";
 import { Box, Flex, Heading, Text } from "@chakra-ui/react";
+import { Guide } from "src/lib/types";
 
 interface Props {
   displayedGuide: Guide;

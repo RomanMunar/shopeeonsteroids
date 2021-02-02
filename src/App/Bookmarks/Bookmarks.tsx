@@ -1,24 +1,22 @@
 import { Flex, useToast } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { BookmarkItem } from "src/lib/types";
 import {
+  previewBookmark as bookmarkPreview,
   removeBookmarkItem as bookmarkItemRemove,
   updateBookmarkDescription as bookmarkDescriptionUpdate,
   updateBookmarkTitle as bookmarkTitleUpdate,
-  favoriteBookmark as bookmarkFavorite,
-  unfavoriteBookmark as bookmarkUnfavorite,
-  previewBookmark as bookmarkPreview,
 } from "src/slices/bookmarks/bookmarksSlice";
-import { openComparePanel } from "src/slices/ui/UISlice";
 import {
+  setIsFromBookmarks,
   setSelectedItems,
   setSessionID,
-  setIsFromBookmarks,
 } from "src/slices/selectedItems/selectedItemsSlice";
+import { openComparePanel } from "src/slices/ui/UISlice";
 import { RootState } from "../rootReducer";
-import { BookmarksPanel } from "./BookmarksPanel";
 import { BookmarkPreviewPanel } from "./BookmarkPreviewPanel";
-import { useNavigate } from "react-router-dom";
+import { BookmarksPanel } from "./BookmarksPanel";
 
 const Bookmarks = () => {
   const navigate = useNavigate();

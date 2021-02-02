@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "src/App/rootReducer";
 import { searchAPI } from "src/lib/api";
 import { searchItemLimitPerPage } from "src/lib/data/constants";
-import { SearchItem, SearchQuery, SellerLocation, SearchSort } from "src/lib/types";
+import { SearchItem, SearchQuery, SearchSort, SellerLocation } from "src/lib/types";
 import { getLocaleStorageSettings } from "src/lib/utils/localStorage";
 
 export interface SearchState {

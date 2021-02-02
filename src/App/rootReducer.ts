@@ -1,17 +1,15 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import {
-  selectedItemsReducer,
+  bookmarkReducer,
   searchReducer,
-  ItemReducer,
+  selectedItemsReducer,
   shopReducer,
   UIReducer,
-  bookmarkReducer
 } from "src/slices";
 
 const rootReducer = combineReducers({
   selectedItemsReducer,
   searchReducer,
-  ItemReducer,
   shopReducer,
   UIReducer,
   bookmarkReducer,

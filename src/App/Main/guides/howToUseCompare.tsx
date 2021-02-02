@@ -1,5 +1,5 @@
+import { Box, Flex, ListItem, Text, UnorderedList } from "@chakra-ui/react";
 import { Guide } from "src/lib/types";
-import { Box, Text, UnorderedList, ListItem, Flex } from "@chakra-ui/react";
 
 const howToCompare: Guide = {
   id: 3,

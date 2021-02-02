@@ -1,7 +1,6 @@
 import { Box, Button, Flex, Heading, Skeleton, StackDivider, Text, VStack } from "@chakra-ui/react";
 import { BookmarkFormView } from "src/components";
 import { SelectedItemCard } from "src/components/product";
-import { BookmarkItem } from "src/lib/types";
 import { CompareLayout, SelectedItem } from "src/slices";
 import { SelectedItemDetailed } from "src/slices/selectedItems/selectedItemsSlice";
 

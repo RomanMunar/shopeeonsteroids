@@ -1,16 +1,19 @@
-import { Box, Button, Portal, Text, VStack } from "@chakra-ui/react";
+import {
+  Button,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverTrigger,
+  Portal,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MotionBox } from ".";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverHeader,
-  PopoverBody,
-  PopoverFooter,
-  PopoverArrow,
-  PopoverCloseButton,
-} from "@chakra-ui/react";
 
 const nav = () => {
   const navigate = useNavigate();

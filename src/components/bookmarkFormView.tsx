@@ -13,10 +13,8 @@ import {
   Stack,
   Text,
   Textarea,
-  useToast,
 } from "@chakra-ui/react";
 import { ReactNode, useRef, useState } from "react";
-import { BookmarkItem } from "src/lib/types";
 import { SelectedItem } from "src/slices";
 import { SelectedItemDetailed } from "src/slices/selectedItems/selectedItemsSlice";
 import { SelectedItemCard } from "./product";

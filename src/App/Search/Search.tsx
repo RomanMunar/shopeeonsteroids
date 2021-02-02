@@ -1,20 +1,22 @@
 import { Box, Flex, useToast } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BookmarkItem, RatingQuery, SearchItem, SearchSort, SellerLocation } from "src/lib/types";
+import { addLocalStorageBookmark } from "src/lib/utils/localStorage";
 import { addBookmarkItem, setSelectedBookmarkedItems } from "src/slices/bookmarks/bookmarksSlice";
 import {
+  decrementPage as pageDecrement,
   fetchSearch,
-  setPriceMin,
-  setPriceMax,
+  incrementPage as pageIncrement,
   setKeyword as keywordSet,
   setLocation as locationSet,
-  setSort as sortSet,
   setOrder as orderSet,
+  setPriceMax,
+  setPriceMin,
   setRatingFilter as setFilterRating,
-  toggleShopeeVerifiedOnly as toggleVerifiedOnly,
+  setSort as sortSet,
   toggleCODOnly as toggleCOD,
-  incrementPage as pageIncrement,
-  decrementPage as pageDecrement,
+  toggleShopeeVerifiedOnly as toggleVerifiedOnly,
 } from "src/slices/search/searchSlice";
 import {
   fetchDetailedItem,
@@ -24,10 +26,10 @@ import {
   SelectedItemDetailed,
   selectItem,
   swapFirstAndSecondItems,
-  unselectItem,
   toFirst,
   toSecond,
   toThird,
+  unselectItem,
 } from "src/slices/selectedItems/selectedItemsSlice";
 import {
   closeComparePanel as comparePanelClose,
@@ -38,14 +40,12 @@ import {
   toggleFilterPanel,
   tripleCompareLayout,
 } from "src/slices/ui/UISlice";
+import useClippy from "use-clippy";
 import { RootState } from "../rootReducer";
 import { ComparePanel } from "./ComparePanel";
 import { FilterPanel } from "./FilterPanel";
 import { SearchPanel } from "./SearchPanel";
 import { SelectedItemsPanel } from "./SelectedItemsPanel";
-import useClippy from "use-clippy";
-import { useEffect } from "react";
-import { addLocalStorageBookmark, getLocaleStorageBookmarks } from "src/lib/utils/localStorage";
 
 const Search = () => {
   const toast = useToast();

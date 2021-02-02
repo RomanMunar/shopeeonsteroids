@@ -1,10 +1,9 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { useIntersection } from "src/lib/hooks";
+import { useState } from "react";
 import { SearchItem } from "src/lib/types";
 import { kFormat } from "src/lib/utils";
-import { LazyBox, MotionBox } from "..";
+import { MotionBox } from "..";
 
 interface Props {
   item: SearchItem;
