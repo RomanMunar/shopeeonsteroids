@@ -46,17 +46,26 @@ const searchPanel = ({
   openComparePanel,
   query,
   setSort,
+  setKeyword,
   incrementPage,
   decrementPage,
 }: Props) => {
   const [mounted, setMounted] = useState(false);
   const selectedItemsIds = selectedItems.map((i) => i.itemid);
-
+  const [localKeyword, setLocalKeyword] = useState("");
   useEffect(() => {
-    search();
     // delay rendering of heavy components
     setTimeout(() => setMounted(true), 400);
   }, []);
+
+  const onKeypressSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (query.keyword === localKeyword) return;
+
+    if (event.code === "Enter" || event.code === "NumpadEnter") {
+      setKeyword(localKeyword);
+      search();
+    }
+  };
 
   return (
     <Flex
@@ -100,7 +109,13 @@ const searchPanel = ({
               <InputLeftElement pointerEvents="none">
                 <Search width="20" height="20" />
               </InputLeftElement>
-              <Input type="text" placeholder="Coffee..." />
+              <Input
+                value={localKeyword}
+                onChange={(e) => setLocalKeyword(e.target.value)}
+                onKeyPress={onKeypressSubmit}
+                type="text"
+                placeholder="Coffee..."
+              />
             </InputGroup>
             <Flex my="4" w="full" justifyContent="space-between">
               <HStack spacing={3}>
@@ -171,7 +186,12 @@ const searchPanel = ({
       </Box>
       <Box w="full" shadow="inner" bg="gray.50" flex="1">
         <Box postion="relative" w="full" maxW="5xl">
-          {mounted && query.keyword === "" && fetchStatus === "idle" && (
+          {mounted && query.keyword !== "" && (
+            <Flex w="full" bg="gray.50" alignItems="start" py={2} px={6} zIndex="20">
+              Search results for &ldquo;{query.keyword}&rdquo;
+            </Flex>
+          )}
+          {mounted && fetchStatus === "idle" && (
             <Flex flexDirection="column" alignItems="center" justifyContent="center" my="10">
               <Heading mb="-10" size="md">
                 Try to Search for `Coffee`
@@ -179,30 +199,29 @@ const searchPanel = ({
               <Box as="img" w="auto" h="400px" src="/gummy-coffee.png" alt="coffee cup" />
             </Flex>
           )}
-          {mounted && fetchStatus !== "pending" ? (
-            <>
-              <Flex w="full" bg="gray.50" alignItems="start" py={2} px={6} zIndex="20">
-                Search results for &ldquo;Coffee&rdquo;
-              </Flex>
-              <Flex p={2} alignItems="center" flexDirection="row" w="full" flexWrap="wrap">
-                {items.map((m) => (
-                  <ProductCard
-                    selected={selectedItemsIds.includes(m.itemid)}
-                    addToSelectedItems={addToSelectedItems}
-                    removeToSelectedItems={removeToSelectedItems}
-                    key={m.itemid}
-                    item={m}
-                  />
-                ))}
-              </Flex>
-            </>
-          ) : (
-            <Flex p={2} alignItems="center" flexDirection="row" w="full" flexWrap="wrap">
-              {Array(10).map((_, idx) => (
-                <ProductSkeleton key={idx} />
+          <Flex p={2} alignItems="center" flexDirection="row" w="full" flexWrap="wrap">
+            {mounted &&
+              fetchStatus === "pending" &&
+              new Array(12).fill(0).map(() => (
+                <>
+                  <ProductSkeleton />
+                  <ProductSkeleton />
+                  <ProductSkeleton />
+                  <ProductSkeleton />
+                </>
               ))}
-            </Flex>
-          )}
+            {mounted &&
+              fetchStatus === "fulfilled" &&
+              items.map((m) => (
+                <ProductCard
+                  selected={selectedItemsIds.includes(m.itemid)}
+                  addToSelectedItems={addToSelectedItems}
+                  removeToSelectedItems={removeToSelectedItems}
+                  key={m.itemid}
+                  item={m}
+                />
+              ))}
+          </Flex>
         </Box>
       </Box>
     </Flex>
