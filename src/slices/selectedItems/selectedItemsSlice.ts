@@ -33,11 +33,17 @@ export interface SelectedItemDetailed extends ItemDetailed {
 interface SelectedItemsState {
   selectedItems: (SelectedItem | SelectedItemDetailed)[];
   isEmpty: boolean;
+  isSyncing: boolean;
+  isFromBookmarks: boolean;
+  sessionID: number;
 }
 
 const initialState: SelectedItemsState = {
   selectedItems: [],
   isEmpty: true,
+  isSyncing: false,
+  isFromBookmarks: false,
+  sessionID: Date.now(),
 };
 
 interface ErrorValues {
@@ -204,6 +210,15 @@ export const selectedItemsShopee = createSlice({
       );
       state.selectedItems = [firstEl, secondEl, item, ...rest];
     },
+    setSessionID(state, action: PayloadAction<{ sessionID: number }>) {
+      state.sessionID = action.payload.sessionID;
+    },
+    setIsSyncing(state, action: PayloadAction<{ isSyncing: boolean }>) {
+      state.isSyncing = action.payload.isSyncing;
+    },
+    setIsFromBookmarks(state, action: PayloadAction<{ isFromBookmarks: boolean }>) {
+      state.isFromBookmarks = action.payload.isFromBookmarks;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchDetailedItem.pending, (state, { meta: { arg } }) => {
@@ -334,5 +349,8 @@ export const {
   toFirst,
   toSecond,
   toThird,
+  setSessionID,
+  setIsSyncing,
+  setIsFromBookmarks,
 } = selectedItemsShopee.actions;
 export default selectedItemsShopee.reducer;

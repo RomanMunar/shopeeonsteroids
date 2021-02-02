@@ -41,7 +41,9 @@ export const updateLocalStorageBookmark = (newBookmark: BookmarkItem) => {
 };
 
 export const addLocalStorageBookmark = (newBookmark: BookmarkItem): BookmarkItem[] => {
-  const bookmarks = filterByUniqueField(getLocaleStorageBookmarks(), "id");
+  const bookmarks = filterByUniqueField(getLocaleStorageBookmarks(), "id").filter(
+    (i) => i.id !== newBookmark.id
+  );
   if (!bookmarks) {
     setLocalStorageBookmarks([newBookmark]);
     return [newBookmark];
@@ -66,25 +68,4 @@ export const getLocaleStorageSettings = () => {
 
 export const setLocalStorageSettings = (settings: Settings) => {
   setLocalStorageItem("Settings", settings);
-};
-
-export const setLocalStorageSearchLocation = (location: SellerLocation): Settings => {
-  const settings = getLocaleStorageSettings();
-  return {
-    ...settings,
-    search: {
-      ...settings.search,
-      sellerLocation: [...settings.search.sellerLocation, location],
-    },
-  };
-};
-export const setLocalStorageItemRatingOnly = (rating: 2 | 3 | 4 | 5): Settings => {
-  const settings = getLocaleStorageSettings();
-  return {
-    ...settings,
-    search: {
-      ...settings.search,
-      itemRatingOnly: rating,
-    },
-  };
 };
