@@ -13,7 +13,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { MotionBox } from ".";
+import { MotionBox, NavIconButton } from ".";
+import { Bookmark, Home, Search, Settings } from "./icons";
 
 const nav = () => {
   const navigate = useNavigate();
@@ -22,22 +23,48 @@ const nav = () => {
   const toSearch = () => navigate("/search");
   const toBookmarks = () => navigate("/bookmarks");
   const toSettings = () => navigate("/settings");
-
+  const routes = [
+    {
+      path: "/",
+      linkNavigate: toMain,
+      icon: <Home width="30px" height="30px" strokeWidth="1.5" />,
+    },
+    {
+      path: "/search",
+      linkNavigate: toSearch,
+      icon: <Search width="30px" height="30px" strokeWidth="1.5" />,
+    },
+    {
+      path: "/bookmarks",
+      linkNavigate: toBookmarks,
+      icon: <Bookmark width="30px" height="30px" strokeWidth="1.5" />,
+    },
+    {
+      path: "/settings",
+      linkNavigate: toSettings,
+      icon: <Settings width="30px" height="30px" strokeWidth="1.5" />,
+    },
+  ];
   return (
     <VStack
-      h="100vh"
+      h={["auto", "100vh"]}
+      w={["100vw", "auto"]}
+      position={["fixed", "static"]}
+      bottom="0"
+      zIndex="100"
       py="3"
       bgColor="gray.100"
       borderRight="2px"
       borderColor="gray.200"
       display="flex"
-      flexDirection="column"
+      flexDirection={["row", "column"]}
       alignItems="center"
-      justifyContent="space-between"
-      spacing="10px">
+      justifyContent={["space-around", "space-between"]}
+      spacing={[0, "10px"]}>
       <Popover placement="right-end">
         <PopoverTrigger>
           <MotionBox
+            display={["none", "flex"]}
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.1 }}
             // @ts-ignore
@@ -45,7 +72,6 @@ const nav = () => {
             py="2"
             px="3"
             mb="1"
-            display="flex"
             alignItems="center"
             justifyContent="center"
             w="35px"
@@ -77,8 +103,8 @@ const nav = () => {
                 leftIcon={
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
+                    width="16px"
+                    height="16px"
                     fill="currentColor"
                     viewBox="0 0 16 16">
                     <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z" />
@@ -95,112 +121,19 @@ const nav = () => {
           </PopoverContent>
         </Portal>
       </Popover>
-      <MotionBox
-        whileTap={{ scale: 0.9 }}
-        whileHover={{ scale: 1.1 }}
-        // @ts-ignore
-        transition={{ type: "tween", duration: 0.1 }}
-        onClick={toMain}
-        py="2"
-        px="3"
-        textColor={pathname === "/" ? "gray.800" : "gray.600"}>
-        <svg
-          width="30px"
-          height="30px"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-          />
-        </svg>
-      </MotionBox>
-      <MotionBox
-        whileTap={{ scale: 0.9 }}
-        whileHover={{ scale: 1.1 }}
-        // @ts-ignore
-        transition={{ type: "tween", duration: 0.1 }}
-        onClick={toSearch}
-        py="2"
-        px="3"
-        textColor={pathname === "/search" ? "gray.800" : "gray.600"}>
-        <svg
-          width="30px"
-          height="30px"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </MotionBox>
-      <MotionBox
-        whileTap={{ scale: 0.9 }}
-        whileHover={{ scale: 1.1 }}
-        // @ts-ignore
-        transition={{ type: "tween", duration: 0.1 }}
-        onClick={toBookmarks}
-        py="2"
-        px="3"
-        textColor={pathname === "/bookmarks" ? "gray.800" : "gray.600"}>
-        <svg
-          width="30px"
-          height="30px"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-          />
-        </svg>
-      </MotionBox>
-      <MotionBox
-        whileTap={{ scale: 0.9 }}
-        whileHover={{ scale: 1.1 }}
-        // @ts-ignore
-        transition={{ type: "tween", duration: 0.1 }}
-        onClick={toSettings}
-        py="2"
-        px="3"
-        textColor={pathname === "/settings" ? "gray.800" : "gray.600"}>
-        <svg
-          width="30px"
-          height="30px"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-      </MotionBox>
-      <MotionBox flex="1" />
+      {routes.map((r) => (
+        <NavIconButton
+          key={r.path}
+          active={r.path === pathname}
+          icon={r.icon}
+          onClick={r.linkNavigate}
+        />
+      ))}
+      <MotionBox display={["none", "block"]} flex="1" />
       <Popover placement="right-end">
         <PopoverTrigger>
           <MotionBox
+            display={["none", "flex"]}
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.1 }}
             // @ts-ignore
