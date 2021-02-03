@@ -12,7 +12,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { Search } from "src/components/icons";
+import { ArrowNext, Search } from "src/components/icons";
 import { ProductCard, ProductSkeleton } from "src/components/product";
 import { searchItemLimitPerPage, searchSort } from "src/lib/data/constants";
 import { SearchItem, SearchQuery, SearchSort } from "src/lib/types";
@@ -83,21 +83,8 @@ const searchPanel = ({
               SEARCH
             </Heading>
             <Button
-              rightIcon={
-                <svg
-                  fill="currentColor"
-                  width="20px"
-                  height="20px"
-                  viewBox="0 0 20 20"
-                  transform="rotate(180)"
-                  x="0px"
-                  y="0px">
-                  <g>
-                    <path d="M16 16V4h2v12h-2zM6 9l2.501-2.5-1.5-1.5-5 5 5 5 1.5-1.5-2.5-2.5h8V9H6z"></path>
-                  </g>
-                </svg>
-              }
-              mr="2"
+              rightIcon={<ArrowNext width="20px" height="20px" transform="rotate(180)" />}
+              mr="4"
               size="sm"
               colorScheme="blue"
               onClick={openComparePanel}>
@@ -117,16 +104,23 @@ const searchPanel = ({
                 placeholder="Coffee..."
               />
             </InputGroup>
-            <Flex my="4" w="full" justifyContent="space-between">
-              <HStack spacing={3}>
-                <Flex alignItems="center">
-                  <Text mx="1" whiteSpace="nowrap">
-                    Sort By
-                  </Text>
-                  <ButtonGroup size="sm" variant="outline">
-                    {searchSort.map((s) => (
+            <Flex flexDirection={["column", "row"]} my="4" w="full" justifyContent="space-between">
+              <Flex flexDirection={["column", "row"]} alignItems="start">
+                <Text mx="1" whiteSpace="nowrap">
+                  Sort By
+                </Text>
+                <ButtonGroup
+                  display="flex"
+                  flexDirection="row"
+                  flexWrap="wrap"
+                  size={"sm"}
+                  variant="outline">
+                  {searchSort
+                    .filter((s) => s !== "relevancy")
+                    .map((s) => (
                       <Button
                         key={s}
+                        my="0.5"
                         mx="0.5"
                         textTransform="capitalize"
                         color={query.by === s ? "blue.500" : "gray.800"}
@@ -134,49 +128,22 @@ const searchPanel = ({
                         {s}
                       </Button>
                     ))}
-                  </ButtonGroup>
-                </Flex>
-              </HStack>
-              <Flex alignItems="center">
+                </ButtonGroup>
+              </Flex>
+              <Flex mt={[2, 0]} alignSelf="flex-end" alignItems="center">
                 <Text mx="1">Page {query.newest / searchItemLimitPerPage}</Text>
                 <ButtonGroup size="sm" isAttached variant="outline">
                   <IconButton
                     onClick={decrementPage}
                     p={2}
                     aria-label="Previous Page"
-                    icon={
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 19l-7-7 7-7"
-                        />
-                      </svg>
-                    }
+                    icon={<ArrowNext />}
                   />
                   <IconButton
                     onClick={incrementPage}
                     p={2}
-                    aria-label="Add to friends"
-                    icon={
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    }
+                    aria-label="Next Page"
+                    icon={<ArrowNext transform="rotate(180)" />}
                   />
                 </ButtonGroup>
               </Flex>
@@ -185,7 +152,7 @@ const searchPanel = ({
         </Box>
       </Box>
       <Box w="full" shadow="inner" bg="gray.50" flex="1">
-        <Box postion="relative" w="full" maxW="5xl">
+        <Box postion="relative" w="full" mx="auto" maxW="5xl">
           {mounted && query.keyword !== "" && (
             <Flex w="full" bg="gray.50" alignItems="start" py={2} px={6} zIndex="20">
               Search results for &ldquo;{query.keyword}&rdquo;
@@ -196,7 +163,7 @@ const searchPanel = ({
               <Heading mb="-10" size="md">
                 Try to Search for `Coffee`
               </Heading>
-              <Box as="img" w="auto" h="400px" src="/gummy-coffee.png" alt="coffee cup" />
+              <Box as="img" w="400px" h="auto" src="/gummy-coffee.png" alt="coffee cup" />
             </Flex>
           )}
           <Flex p={2} alignItems="center" flexDirection="row" w="full" flexWrap="wrap">
