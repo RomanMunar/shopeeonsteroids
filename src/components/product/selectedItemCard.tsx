@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SelectedItem } from "src/slices";
 import { SelectedItemDetailed } from "src/slices/selectedItems/selectedItemsSlice";
 import { MotionBox } from "..";
+import { Close, Like, Star } from "../icons";
 
 interface Props {
   item: SelectedItem | SelectedItemDetailed;
@@ -59,16 +60,25 @@ const selectedItemCard = ({
                 ₱{item.price / 100000}
               </Text>
               <Text fontSize="sm" lineHeight="1rem" noOfLines={2}>
-                {item.sold}
+                {item.sold}{" "}
+                <Text as="span" fontSize="xs">
+                  sold/mon
+                </Text>
               </Text>
             </Flex>
             <Flex my="1" alignItems="center" justifyContent="space-between">
-              <Text fontSize="sm" lineHeight="1rem" noOfLines={2}>
-                {item.item_rating.rating_star.toFixed(2)}
-              </Text>
-              <Text fontSize="sm" lineHeight="1rem" noOfLines={2}>
-                {item.liked_count}
-              </Text>
+              <Flex alignItems="flex-end">
+                <Text fontSize="sm" lineHeight="1rem" noOfLines={2}>
+                  {item.item_rating.rating_star.toFixed(2)}
+                </Text>{" "}
+                <Star width="14px" height="14px" />
+              </Flex>
+              <Flex alignItems="flex-end">
+                <Text fontSize="sm" lineHeight="1rem" noOfLines={2}>
+                  {item.liked_count}
+                </Text>{" "}
+                <Like width="12px" height="12px" />
+              </Flex>
             </Flex>
           </Box>
         </Box>
@@ -98,20 +108,7 @@ const selectedItemCard = ({
               position="absolute"
               top="10px"
               right="10px">
-              <svg
-                width="15px"
-                height="15px"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <Close width="15px" height="15px" />
             </MotionBox>
           )}
         </AnimatePresence>

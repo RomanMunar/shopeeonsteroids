@@ -11,6 +11,7 @@ import {
   Text,
   Tooltip,
   VStack,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -20,6 +21,7 @@ import { getRelativeTimeFormat, kFormat, toLocaleTime } from "src/lib/utils";
 import { SelectedItem } from "src/slices";
 import { SelectedItemDetailed } from "src/slices/selectedItems/selectedItemsSlice";
 import { ImageSlider, MotionBox } from "..";
+import { Clipboard, Star } from "../icons";
 
 interface Props {
   selectedItem: SelectedItem | SelectedItemDetailed;
@@ -51,7 +53,7 @@ const compareProductCard = ({
   const ratingsIntersection = useIntersection(ratingsIntersectionRef);
   const shopIntersectionRef = useRef(null);
   const shopIntersection = useIntersection(shopIntersectionRef);
-
+  const isMobile = useMediaQuery("(max-width: 500px)")[0];
   const incrementPage = () => {
     setRatingsPage((p) => p + 1);
   };
@@ -115,10 +117,11 @@ const compareProductCard = ({
 
   return (
     <Box
-      m={2}
+      m={isMobile ? 0 : 2}
+      mt={isMobile ? 2 : 0}
       w="full"
       bg="white"
-      border="2px"
+      border={isMobile ? "1px" : "2px"}
       rounded="md"
       borderColor="gray.400"
       overflowY="auto"
@@ -136,32 +139,24 @@ const compareProductCard = ({
           shadow="md"
           color="blue.700"
           onClick={() => copyShopeeUrl(selectedItem)}
-          aria-label="Copy shopee url">
-          <svg
-            width="20px"
-            height="20px"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
-            />
-          </svg>
-        </IconButton>
+          aria-label="Copy shopee url"
+          icon={<Clipboard width="20px" height="20px" />}
+        />
       </Tooltip>
-      <Text m="4" noOfLines={2} fontSize="md" fontWeight="600" color="gray.800">
+      <Text m={isMobile ? 2 : "4"} noOfLines={2} fontSize="md" fontWeight="600" color="gray.800">
         {selectedItem.name}
       </Text>
-      <Flex my="2" mx="6" alignItems="center" justifyContent="space-between">
+      <Flex my="2" mx={isMobile ? 2 : "6"} alignItems="center" justifyContent="space-between">
         <Box>
           <Text display="inline" fontWeight="600" fontSize="md" lineHeight="1rem">
             ₱
           </Text>
-          <Text display="inline" fontWeight="600" fontSize="2xl" lineHeight="1rem" noOfLines={2}>
+          <Text
+            display="inline"
+            fontWeight="600"
+            fontSize={isMobile ? "lg" : "2xl"}
+            lineHeight="1rem"
+            noOfLines={2}>
             {selectedItem.price / 100000}
           </Text>
         </Box>
@@ -172,25 +167,18 @@ const compareProductCard = ({
           Sold
         </Text>
       </Flex>
-      <Flex my="2" mx="6" alignItems="center" justifyContent="space-between">
+      <Flex my="2" mx={isMobile ? 2 : "6"} alignItems="center" justifyContent="space-between">
         <Flex>
           <Text fontSize="md" lineHeight="1rem" noOfLines={2}>
             {selectedItem.item_rating.rating_star.toFixed(2)}{" "}
           </Text>
-          <svg
-            width="16px"
-            height="16px"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
+          <Star width="16px" height="16px" />
         </Flex>
         <Text fontSize="md" lineHeight="1rem" noOfLines={2}>
           {kFormat(selectedItem.liked_count)} Likes
         </Text>
       </Flex>
-      <Flex p="4" flexWrap="wrap" flexDirection="row" my="4">
+      <Flex p={isMobile ? 2 : "4"} flexWrap="wrap" flexDirection="row" my="4">
         {selectedItem.type === "detailed" && selectedItem.fetchStatus === "fulfilled" ? (
           selectedItem.models.map((m) => (
             <Box
@@ -223,7 +211,8 @@ const compareProductCard = ({
       </Flex>
       {selectedItem.type === "detailed" && selectedItem.shop.fetchStatus === "fulfilled" ? (
         <Flex
-          p="7"
+          px={isMobile ? 2 : "7"}
+          py="7"
           w="full"
           justifyContent="center"
           bg="gray.200"
@@ -268,7 +257,7 @@ const compareProductCard = ({
               </Text>
             </Flex>
             <Flex w="100%" flexDirection="column">
-              <Text fontSize="sm">Replies within</Text>
+              <Text fontSize="sm">Replies</Text>
               <Text fontSize="sm" fontWeight="bold">
                 {toLocaleTime(selectedItem.shop.response_time)}
               </Text>
@@ -312,7 +301,7 @@ const compareProductCard = ({
           </Grid>
         </Flex>
       )}
-      <Box p="4" my="4">
+      <Box p={isMobile ? 2 : "4"} my="4">
         <Heading as="h3" mb="3" size="sm">
           Product Description
         </Heading>
@@ -330,7 +319,7 @@ const compareProductCard = ({
           <Skeleton w="full" h="500px" />
         )}
       </Box>
-      <Box p="4" my="4">
+      <Box py="4" px={isMobile ? 2 : "4"} my="4">
         <Heading as="h3" mb="3" size="sm">
           Ratings
         </Heading>
@@ -344,15 +333,7 @@ const compareProductCard = ({
             maxW="sm">
             {selectedItem.item_rating.rating_count.slice(1).map((rating, idx) => (
               <Flex key={idx} alignItems="center" justifyContent="start" w="full">
-                {idx + 1}{" "}
-                <svg
-                  width="16px"
-                  height="16px"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
+                {idx + 1} <Star width="16px" height="16px" />
                 <Box
                   rounded="lg"
                   w={(rating / selectedItem.item_rating.rating_count[0]) * 100 + "%"}
@@ -368,16 +349,16 @@ const compareProductCard = ({
         <Flex justifyContent="start" alignItems="start" flexDirection="column">
           <Box>
             <Text fontWeight="semibold">Contains</Text>
-            <ButtonGroup mb="4" size="sm" isAttached variant="outline">
+            <ButtonGroup mb="4" size={isMobile ? "xs" : "sm"} isAttached variant="outline">
               <Button
                 color={ratingsContentFilter === "images" ? "gray.600" : "gray.800"}
                 onClick={() => setRatingsContentFilter("images")}>
-                With Images
+                {isMobile ? "Images" : "With Images"}
               </Button>
               <Button
                 color={ratingsContentFilter === "comments" ? "gray.600" : "gray.800"}
                 onClick={() => setRatingsContentFilter("comments")}>
-                With Comments
+                {isMobile ? "Comments" : "With Comments"}
               </Button>
               <Button
                 color={ratingsContentFilter === "all" ? "gray.600" : "gray.800"}
@@ -389,21 +370,14 @@ const compareProductCard = ({
           <Flex w="full" justifyContent="space-between" alignItems="flex-end">
             <Box>
               <Text fontWeight="semibold">Ratings with</Text>
-              <ButtonGroup isAttached size="sm" variant="outline">
+              <ButtonGroup isAttached size={isMobile ? "xs" : "sm"} variant="outline">
                 {[1, 2, 3, 4, 5].map((r) => (
                   <Button
                     key={r}
                     color={ratingsType === r ? "gray.600" : "gray.800"}
                     onClick={() => setRatingsType(r)}>
                     {r}
-                    <svg
-                      width="12px"
-                      height="12px"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
+                    <Star width="12px" height="12px" />
                   </Button>
                 ))}
                 <Button
@@ -422,7 +396,7 @@ const compareProductCard = ({
       </Box>
       <VStack
         py="4"
-        px="8"
+        px={isMobile ? 0 : "8"}
         spacing="2"
         divider={<StackDivider borderColor="gray.400" />}
         borderY="1px"
@@ -541,9 +515,11 @@ const compareProductCard = ({
             ))
         ) : (
           <>
-            <Skeleton ref={ratingsIntersectionRef} h="200px" w="full" m="4" />
-            <Skeleton h="200px" w="full" m="4" />
-            <Skeleton h="200px" w="full" m="4" />
+            <Skeleton h="200px" w="full" p="4" my="4">
+              <Box ref={ratingsIntersectionRef} w="full" h="full" />
+            </Skeleton>
+            <Skeleton h="200px" w="full" p="4" my="4"></Skeleton>
+            <Skeleton h="200px" w="full" p="4" my="4"></Skeleton>
           </>
         )}
       </VStack>
