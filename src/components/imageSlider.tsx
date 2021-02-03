@@ -49,16 +49,12 @@ export const imageSlider = ({ images }: Props) => {
       alignItems="center"
       justifyContent="center"
       position="relative">
-      <Box w="300px" h="300px">
+      <Box w={["150px", "300px"]} h={["150px", "300px"]}>
         <AnimatePresence initial={false} custom={direction}>
           <motion.div
             style={{
               position: "absolute",
               top: 0,
-              width: "300px",
-              height: "300px",
-              backgroundSize: "cover",
-              backgroundImage: `url(${images[imageIndex]})`,
             }}
             key={page}
             custom={direction}
@@ -80,8 +76,9 @@ export const imageSlider = ({ images }: Props) => {
               } else if (swipe > swipeConfidenceThreshold) {
                 paginate(-1);
               }
-            }}
-          />
+            }}>
+            <Box as="img" width="300px" height="auto" src={images[imageIndex]} />
+          </motion.div>
         </AnimatePresence>
       </Box>
       <Box position="absolute" top="0" left="0" w="full" h="full" bg="gray.200" />
