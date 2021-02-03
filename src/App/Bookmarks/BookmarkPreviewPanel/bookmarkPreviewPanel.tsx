@@ -1,4 +1,5 @@
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Text, useMediaQuery } from "@chakra-ui/react";
+import { ArrowNext, ArrowRight } from "src/components/icons";
 import { SelectedItemCard } from "src/components/product";
 import { BookmarkItem } from "src/lib/types";
 
@@ -8,37 +9,28 @@ interface Props {
 }
 
 const rightPanel = ({ displayedBookmark, compareBookmarkItems }: Props) => {
+  const isMobile = useMediaQuery("(max-width: 500px)")[0];
+
   return (
-    <Flex flexDirection="column" overflowY="auto" h="100vh" pt="5" flex="1" borderColor="blue.300">
+    <Flex flexDirection="column" overflowY="auto" pt="5" flex="1" borderColor="blue.300">
       <Flex
+        mx="auto"
         maxW="5xl"
         justifyContent="space-between"
         alignItems="flex-end"
-        flexDirection="row"
-        py="5"
+        w="full"
+        flexDirection={["column", "row"]}
+        py={[2, 5]}
         px="8"
         my="3">
-        <Box>
+        <Box w="full" mb={[2, 0]}>
           <Heading mb="3" as="h3" size="lg" alignSelf="start">
             {displayedBookmark.title}
           </Heading>
           <Text maxW="lg">{displayedBookmark.description}</Text>
         </Box>
         <Button
-          rightIcon={
-            <svg
-              fill="currentColor"
-              width="20px"
-              height="20px"
-              viewBox="0 0 20 20"
-              transform="rotate(180)"
-              x="0px"
-              y="0px">
-              <g>
-                <path d="M16 16V4h2v12h-2zM6 9l2.501-2.5-1.5-1.5-5 5 5 5 1.5-1.5-2.5-2.5h8V9H6z"></path>
-              </g>
-            </svg>
-          }
+          rightIcon={<ArrowNext width="20px" height="20px" transform="rotate(180)" />}
           mr="2"
           size="sm"
           colorScheme="blue"
@@ -46,10 +38,23 @@ const rightPanel = ({ displayedBookmark, compareBookmarkItems }: Props) => {
           Compare Now
         </Button>
       </Flex>
-      <Box h="full" p="8" borderY="1px" borderColor="gray.400" bg="gray.50" shadow="inner">
-        <Flex flexWrap="wrap" flexDirection="row" justifyContent="flex-start" h="auto" maxW="5xl">
+      <Box
+        h="full"
+        p="8"
+        borderY="1px"
+        borderColor="gray.400"
+        bg="gray.50"
+        shadow="inner"
+        pb={isMobile ? "100px" : 0}>
+        <Flex
+          flexWrap="wrap"
+          flexDirection="row"
+          justifyContent="flex-start"
+          h="auto"
+          maxW="5xl"
+          mx="auto">
           {displayedBookmark.items.map((item) => (
-            <Box key={item.itemid} maxW="33%">
+            <Box key={item.itemid} maxW="340px">
               <SelectedItemCard item={item} />
             </Box>
           ))}
