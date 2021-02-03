@@ -13,10 +13,12 @@ import {
   NumberInputField,
   NumberInputStepper,
   Text,
+  useMediaQuery,
   VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { MotionBox } from "src/components";
+import { ArrowRight, Star } from "src/components/icons";
 import { itemRating, locations } from "src/lib/data/constants";
 import { SearchQuery, SellerLocation } from "src/lib/types";
 
@@ -29,6 +31,7 @@ interface Props {
   setRatingFilter: (star: number) => void;
   toggleCODOnly: () => void;
   toggleShopeeVerifiedOnly: () => void;
+  collapseFilter: () => void;
 }
 
 const filterPanel = ({
@@ -45,25 +48,33 @@ const filterPanel = ({
   const onPriceRangeSubmit = () => {
     setPriceRange(minPrice, maxPrice);
   };
+  const isMobile = useMediaQuery("(max-width: 500px)")[0];
+
   return (
-    <Box borderRight="1px" borderColor="gray.300" position="relative" flex="none">
+    <>
       <MotionBox
         animate={{
-          opacity: collapsed ? 0 : 1,
           overflow: collapsed ? "hidden" : "auto",
+          height: isMobile ? (collapsed ? "50px" : "100vh") : "100vh",
+          bottom: isMobile ? (collapsed ? 50 : 0) : 0,
         }}
         // @ts-ignore
         transition={{ type: "tween", duration: 0.2 }}
+        bg="white"
+        borderRight={isMobile ? (collapsed ? 0 : "1px") : "1px"}
+        borderColor="gray.300"
         display="flex"
+        position={["absolute", "relative"]}
         flexDirection="row"
-        p="5"
-        w="full"
+        zIndex="90"
+        p={5}
         justifyContent="space-between"
         alignItems="start">
         <MotionBox
           animate={{
-            width: collapsed ? 0 : "auto",
+            width: collapsed ? 0 : "200px",
             visibility: collapsed ? "hidden" : "visible",
+            opacity: collapsed ? 0 : 1,
           }}
           // @ts-ignore
           transition={{ type: "tween", duration: 0.2 }}>
@@ -103,17 +114,14 @@ const filterPanel = ({
                         <Flex alignItems="center" flexDirection="row">
                           {rating}
                           {[1, 2, 3, 4, 5].map((r) => (
-                            <svg
+                            <Star
                               key={r}
                               width="15px"
                               height="15px"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                              fill={r <= rating ? "#3182CE" : "#DADADA"}>
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
+                              color={r <= rating ? "#3182CE" : "#DADADA"}
+                            />
                           ))}{" "}
-                          <Text size="xs">&UP</Text>
+                          <Text fontSize="sm">&UP</Text>
                         </Flex>
                       </Checkbox>
                     </Flex>
@@ -171,25 +179,27 @@ const filterPanel = ({
             </VStack>
           </Box>
         </MotionBox>
+        <MotionBox
+          animate={{ rotate: collapsed ? -180 : 0 }}
+          border={isMobile ? "2px" : "0"}
+          borderColor={isMobile ? "gray.300" : "0"}
+          position="absolute"
+          top="8px"
+          right="8px"
+          as="button"
+          onClick={toggleCollapse}
+          alignItems="center"
+          justifyContent="center"
+          display="flex"
+          rounded="md"
+          minW="30px"
+          minH="30px"
+          maxW="30px"
+          maxH="30px">
+          <ArrowRight width="20px" height="20px" />
+        </MotionBox>
       </MotionBox>
-      <MotionBox
-        animate={{ rotate: collapsed ? -180 : 0 }}
-        position="absolute"
-        top="16px"
-        right="8px"
-        as="button"
-        onClick={toggleCollapse}
-        minW="20px"
-        minH="20px"
-        maxW="20px"
-        maxH="20px">
-        <svg width="100%" height="100%" viewBox="0 0 20 20" x="0px" y="0px">
-          <g>
-            <path d="M16 16V4h2v12h-2zM6 9l2.501-2.5-1.5-1.5-5 5 5 5 1.5-1.5-2.5-2.5h8V9H6z"></path>
-          </g>
-        </svg>
-      </MotionBox>
-    </Box>
+    </>
   );
 };
 
