@@ -39,6 +39,7 @@ import {
   showBookmarkFormModal,
   toggleFilterPanel,
   tripleCompareLayout,
+  collapseFilterPanel,
 } from "src/slices/ui/UISlice";
 import useClippy from "use-clippy";
 import { RootState } from "../rootReducer";
@@ -126,6 +127,9 @@ const Search = () => {
     dispatch(selectItem({ item }));
   };
   const toggleFilterPanelCollapse = () => dispatch(toggleFilterPanel());
+  const collapseFilter = () => {
+    dispatch(collapseFilter());
+  };
   const closeComparePanel = () => {
     dispatch(comparePanelClose());
   };
@@ -235,6 +239,7 @@ const Search = () => {
       // Sync items if items are from a bookmark
       dispatch(setSelectedBookmarkedItems({ id: sessionID, newItems: selectedItems }));
     } else {
+      if (selectedItems.length <= 2) return;
       const date = new Date();
       const sessionBookmark = {
         title: `Unsaved Session`,
@@ -268,6 +273,7 @@ const Search = () => {
               query={query}
               collapsed={isFilterPanelCollapsed}
               toggleCollapse={toggleFilterPanelCollapse}
+              collapseFilter={collapseFilter}
             />
             <SearchPanel
               openComparePanel={openComparePanel}

@@ -10,6 +10,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { Reset, Save, Star } from "src/components/icons";
 import {
   compareLayouts,
   itemRating,
@@ -63,7 +64,14 @@ const Settings = () => {
         </Box>
       </Box>
       <Box flex="1" bg="gray.50" shadow="inner">
-        <Flex mx="auto" p="8" maxW="2xl" flex="1" w="full">
+        <Flex
+          flexDirection={["column", "row"]}
+          mx="auto"
+          p="8"
+          maxW="2xl"
+          flex="1"
+          w="full"
+          pb="20">
           <Flex flexDirection="column" w="full">
             <Heading as="h3" py="4" size="sm" alignSelf="start">
               Search Preferences
@@ -105,14 +113,7 @@ const Settings = () => {
                   <Stack pl={4} spacing={2} direction="column">
                     {itemRating.map((i) => (
                       <Checkbox
-                        icon={
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                        }
+                        icon={<Star />}
                         key={i}
                         isChecked={sessionSettings.itemRatingOnly === i}
                         onChange={(e) => {
@@ -228,40 +229,10 @@ const Settings = () => {
                 <Button
                   variant="outline"
                   onClick={onReset}
-                  leftIcon={
-                    <svg
-                      height="20px"
-                      width="20px"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor">
-                      <path
-                        fillRule="evenodd"
-                        d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  }>
+                  leftIcon={<Reset width="20px" height="20px" />}>
                   Reset
                 </Button>
-                <Button
-                  onClick={onSubmit}
-                  rightIcon={
-                    <svg
-                      height="20px"
-                      width="20px"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-                      />
-                    </svg>
-                  }>
+                <Button onClick={onSubmit} rightIcon={<Save width="20px" height="20px" />}>
                   Save
                 </Button>
               </ButtonGroup>

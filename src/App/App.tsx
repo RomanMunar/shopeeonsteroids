@@ -11,7 +11,6 @@ const routes = [
   { path: "/search", element: <Search /> },
   { path: "/bookmarks", element: <Bookmarks /> },
   { path: "/settings", element: <Settings /> },
-  { path: "/search", element: <Search /> },
 ];
 
 function App() {
