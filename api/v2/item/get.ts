@@ -1,4 +1,5 @@
 import { NowRequest, NowResponse } from "@vercel/node";
+import fetch from "node-fetch";
 import queryString from "query-string";
 import { shopeeUrlV2 } from "../../../constants";
 import { ShopeeItemDetailResponse } from "../../../src/lib/types/Api";
@@ -13,8 +14,9 @@ export default async (req: NowRequest, res: NowResponse) => {
   try {
     const parsedQuery = queryString.stringify({ itemid, shopid });
     const response: ShopeeItemDetailResponse = await fetch(
-      `${shopeeUrlV2}get?${parsedQuery}`
+      `${shopeeUrlV2}/item/get?${parsedQuery}`
     ).then((res) => res.json());
+    console.log({ response });
 
     const { item, error, error_msg } = response;
     const newData = {
@@ -60,9 +62,8 @@ export default async (req: NowRequest, res: NowResponse) => {
       }),
     };
 
-    res.status(200).json({ data: newData, error, error_msg });
+    res.status(200).json({ item: newData, error, error_msg });
   } catch (e) {
-    console.error("Engk! " + e.message);
     res.status(500).send("Error");
   }
 };
