@@ -18,12 +18,13 @@ import { Guide } from "src/lib/types";
 interface Props {
   guides: Guide[];
   displayedGuide: Guide;
-  previewGuide: (item: Guide) => void;
   collapsed: boolean;
+  previewGuide: (item: Guide) => void;
+  searchGuides: (keyword: string) => void;
   toggleCollapse: () => void;
 }
 
-const guidesPanel = ({ guides, displayedGuide, previewGuide }: Props) => {
+const guidesPanel = ({ guides, displayedGuide, searchGuides, previewGuide }: Props) => {
   const [collapsed, setCollapse] = useState(false);
   const toggleCollapse = () => setCollapse((p) => !p);
   const isMobile = useMediaQuery("(max-width: 500px)")[0];
@@ -67,7 +68,11 @@ const guidesPanel = ({ guides, displayedGuide, previewGuide }: Props) => {
             <InputLeftElement pointerEvents="none">
               <Search width="20" height="20" />
             </InputLeftElement>
-            <Input type="text" placeholder="Coffee..." />
+            <Input
+              onChange={(e) => searchGuides(e.target.value)}
+              type="text"
+              placeholder="Coffee..."
+            />
           </InputGroup>
         </Box>
         <Box bg="gray.50" display="flex" alignItems="start" flex="1" shadow="inner">
