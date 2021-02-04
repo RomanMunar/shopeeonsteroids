@@ -7,6 +7,9 @@ interface UIState {
   displayComparePanel: boolean;
   compareLayout: CompareLayout;
   isFilterPanelCollapsed: boolean;
+  isSelectedItemsPanelCollapsed: boolean;
+  isGuidesPanelCollapsed: boolean;
+  isBookmarksPanelCollapsed: boolean;
   modalView: ModalView;
   displayModal: boolean;
 }
@@ -16,6 +19,9 @@ const localSettings = getLocaleStorageSettings();
 const initialState: UIState = {
   displayComparePanel: false,
   isFilterPanelCollapsed: localSettings.filterPanelCollapsed,
+  isSelectedItemsPanelCollapsed: false,
+  isGuidesPanelCollapsed: false,
+  isBookmarksPanelCollapsed: false,
   compareLayout: localSettings.compareLayout,
   modalView: "bookmarkForm",
   displayModal: false,
@@ -64,6 +70,27 @@ export const UI = createSlice({
         state.isFilterPanelCollapsed = true;
       }
     },
+    toggleBookmarksPanel(state) {
+      if (state.isBookmarksPanelCollapsed === true) {
+        state.isBookmarksPanelCollapsed = false;
+      } else {
+        state.isBookmarksPanelCollapsed = true;
+      }
+    },
+    toggleGuidesPanel(state) {
+      if (state.isGuidesPanelCollapsed === true) {
+        state.isGuidesPanelCollapsed = false;
+      } else {
+        state.isGuidesPanelCollapsed = true;
+      }
+    },
+    toggleSelectedItemsPanel(state) {
+      if (state.isSelectedItemsPanelCollapsed === true) {
+        state.isSelectedItemsPanelCollapsed = false;
+      } else {
+        state.isSelectedItemsPanelCollapsed = true;
+      }
+    },
     showHelpModal(state) {
       state.displayModal = true;
       state.modalView = "help";
@@ -93,6 +120,9 @@ export const {
   openModal,
   closeModal,
   toggleModal,
+  toggleBookmarksPanel,
+  toggleGuidesPanel,
+  toggleSelectedItemsPanel,
   showHelpModal,
   showGuideModal,
   showBookmarkFormModal,
