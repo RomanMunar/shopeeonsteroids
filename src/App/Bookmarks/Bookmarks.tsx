@@ -1,4 +1,6 @@
 import { Flex, useToast } from "@chakra-ui/react";
+import Fuse from "fuse.js";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { BookmarkItem } from "src/lib/types";
@@ -22,6 +24,7 @@ const Bookmarks = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const toast = useToast();
+  const [searchResults, setSearchResults] = useState<BookmarkItem[]>([]);
   const { bookmarks, displayedBookmark } = useSelector((state: RootState) => state.bookmarkReducer);
   const updateBookmarkDescription = (item: BookmarkItem, newDescription: string) =>
     dispatch(bookmarkDescriptionUpdate({ item, newDescription }));
@@ -51,12 +54,24 @@ const Bookmarks = () => {
     dispatch(setIsFromBookmarks({ isFromBookmarks: true }));
     navigate("/search");
   };
+  const fuse = new Fuse(bookmarks, {
+    keys: [
+      { name: "title", weight: 3 }, // will be assigned a `weight` of 1
+      { name: "description", weight: 3 },
+      { name: "items.name", weight: 1 },
+    ],
+  });
+  const searchBookmarks = (keyword: string) => {
+    const searchResult = fuse.search(keyword).map((r) => r.item);
+    setSearchResults(searchResult);
+  };
   return (
     <Flex overflowY="hidden" h="100vh" w="full" flexDirection="row">
       <BookmarksPanel
+        searchBookmarks={searchBookmarks}
         previewBookmark={previewBookmark}
         displayedBookmark={displayedBookmark}
-        bookmarks={bookmarks}
+        bookmarks={searchResults.length > 0 ? searchResults : bookmarks}
         updateBookmarkDescription={updateBookmarkDescription}
         updateBookmarkTitle={updateBookmarkTitle}
         removeBookmarkItem={removeBookmarkItem}

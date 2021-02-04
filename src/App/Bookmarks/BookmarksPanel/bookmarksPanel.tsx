@@ -17,6 +17,7 @@ import { BookmarkItem } from "src/lib/types";
 interface Props {
   bookmarks: BookmarkItem[];
   displayedBookmark: BookmarkItem;
+  searchBookmarks: (keyword: string) => void;
   previewBookmark: (item: BookmarkItem) => void;
   updateBookmarkDescription: (item: BookmarkItem, newDescription: string) => void;
   updateBookmarkTitle: (item: BookmarkItem, newTitle: string) => void;
@@ -26,6 +27,7 @@ interface Props {
 const leftPanel = ({
   bookmarks,
   displayedBookmark,
+  searchBookmarks,
   previewBookmark,
   updateBookmarkDescription,
   updateBookmarkTitle,
@@ -60,7 +62,13 @@ const leftPanel = ({
             <InputLeftElement pointerEvents="none">
               <Search width="20" height="20" />
             </InputLeftElement>
-            <Input type="text" placeholder="Coffee..." />
+            <Input
+              onChange={(e) => {
+                searchBookmarks(e.target.value);
+              }}
+              type="text"
+              placeholder="Coffee..."
+            />
           </InputGroup>
         </Box>
         <Box bg="gray.50" display="flex" alignItems="start" flex="1" shadow="inner">
