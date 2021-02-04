@@ -1,7 +1,8 @@
 import { Box } from "@chakra-ui/react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { wrap } from "popmotion";
 import { useState } from "react";
+import { MotionBox } from ".";
 
 const variants = {
   enter: (direction: number) => {
@@ -48,20 +49,24 @@ export const imageSlider = ({ images }: Props) => {
       pb="50px"
       alignItems="center"
       justifyContent="center"
-      position="relative">
+      position="relative"
+      userSelect="none">
       <Box w={["150px", "300px"]} h={["150px", "300px"]}>
         <AnimatePresence initial={false} custom={direction}>
-          <motion.div
-            style={{
-              position: "absolute",
-              top: 0,
-            }}
+          <MotionBox
+            position="absolute"
+            top={0}
+            w={["150px", "300px"]}
+            h={["150px", "300px"]}
+            bgSize="cover"
+            bgImage={`url(${images[imageIndex]})`}
             key={page}
             custom={direction}
             variants={variants}
             initial="enter"
             animate="center"
             exit="exit"
+            // @ts-ignore
             transition={{
               x: { type: "spring", stiffness: 500, damping: 50 },
               opacity: { duration: 0.2 },
@@ -69,6 +74,7 @@ export const imageSlider = ({ images }: Props) => {
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={1}
+            // @ts-ignore
             onDragEnd={(_, { offset, velocity }) => {
               const swipe = swipePower(offset.x, velocity.x);
               if (swipe < -swipeConfidenceThreshold) {
@@ -76,9 +82,8 @@ export const imageSlider = ({ images }: Props) => {
               } else if (swipe > swipeConfidenceThreshold) {
                 paginate(-1);
               }
-            }}>
-            <Box as="img" width="300px" height="auto" src={images[imageIndex]} />
-          </motion.div>
+            }}
+          />
         </AnimatePresence>
       </Box>
       <Box position="absolute" top="0" left="0" w="full" h="full" bg="gray.200" />
@@ -102,7 +107,7 @@ export const imageSlider = ({ images }: Props) => {
             mx="1"
             bg="white"
             border="2px"
-            borderColor={page === idx ? "blue.300" : "gray.600"}
+            borderColor={page === idx || images.length - page === idx ? "blue.300" : "gray.600"}
             onClick={() => setPage([idx, 1])}
             key={i}
           />
