@@ -1,15 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "src/App/rootReducer";
 import { getItem, getShopBrief, getRatings } from "src/lib/api";
-import { ItemDetailed, Rating, RatingQuery, SearchItem, ShopBrief } from "src/lib/types";
-
-export interface SelectedItem extends SearchItem {
-  error: ErrorValues | null | boolean;
-  fetchStatus: "fulfilled" | "pending" | "idle";
-  type: "brief";
-  shop: Partial<SelectedItemShop>;
-  ratings: Partial<SelectedItemRatings>;
-}
+import {
+  ItemDetailed,
+  Rating,
+  ItemRatingSummary,
+  RatingQuery,
+  SearchItem,
+  ShopBrief,
+} from "src/lib/types";
 
 export interface SelectedItemShop extends ShopBrief {
   fetchStatus: "fulfilled" | "pending" | "idle";
@@ -18,8 +17,17 @@ export interface SelectedItemShop extends ShopBrief {
 
 export interface SelectedItemRatings {
   ratings: Rating[];
+  itemRatingSummary: ItemRatingSummary;
   fetchStatus: "fulfilled" | "pending" | "idle";
   error: ErrorValues | null | boolean;
+}
+
+export interface SelectedItem extends SearchItem {
+  error: ErrorValues | null | boolean;
+  fetchStatus: "fulfilled" | "pending" | "idle";
+  type: "brief";
+  shop: Partial<SelectedItemShop>;
+  ratings: Partial<SelectedItemRatings>;
 }
 
 export interface SelectedItemDetailed extends ItemDetailed {
@@ -81,7 +89,7 @@ export const fetchShopBrief = createAsyncThunk<
 );
 
 export const fetchItemRatings = createAsyncThunk<
-  { ratings: Rating[]; itemid: number; reset: boolean },
+  { ratings: Rating[]; itemRatingSummary: ItemRatingSummary; itemid: number; reset: boolean },
   { ratingQuery: RatingQuery; reset?: boolean },
   { rejectValue: ErrorValues; state: RootState }
 >(
@@ -90,8 +98,8 @@ export const fetchItemRatings = createAsyncThunk<
     const { itemid, shopid } = ratingQuery;
 
     try {
-      const ratings = await getRatings(ratingQuery);
-      return { ratings, itemid, shopid, reset };
+      const { ratings, item_rating_summary } = await getRatings(ratingQuery);
+      return { ratings, itemRatingSummary: item_rating_summary, itemid, shopid, reset };
     } catch (err) {
       return rejectWithValue({
         message: err.message,
@@ -292,7 +300,7 @@ export const selectedItemsShopee = createSlice({
       item.ratings.fetchStatus = "pending";
     });
     builder.addCase(fetchItemRatings.fulfilled, (state, { payload: item }) => {
-      const { ratings, itemid, reset } = item;
+      const { ratings, itemRatingSummary, itemid, reset } = item;
       const itemIndex = state.selectedItems.findIndex((i) => i.itemid === itemid);
 
       if (itemIndex === -1) {
@@ -306,6 +314,7 @@ export const selectedItemsShopee = createSlice({
             ...oldItem,
             ratings: {
               ratings,
+              itemRatingSummary,
               error: false,
               fetchStatus: "fulfilled",
             },
@@ -317,6 +326,7 @@ export const selectedItemsShopee = createSlice({
             ...oldItem,
             ratings: {
               ratings: oldItem.ratings.ratings.concat(ratings),
+              itemRatingSummary,
               error: false,
               fetchStatus: "fulfilled",
             },
