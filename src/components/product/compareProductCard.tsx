@@ -21,7 +21,7 @@ import { getRelativeTimeFormat, kFormat, toLocaleTime } from "src/lib/utils";
 import { SelectedItem } from "src/slices";
 import { SelectedItemDetailed } from "src/slices/selectedItems/selectedItemsSlice";
 import { ImageSlider, MotionBox } from "..";
-import { Clipboard, Star } from "../icons";
+import { Clipboard, Star, User } from "../icons";
 
 interface Props {
   selectedItem: SelectedItem | SelectedItemDetailed;
@@ -73,7 +73,8 @@ const compareProductCard = ({
     if (!ratingsIntersection) return;
     if (ratingsIntersection.intersectionRatio >= 1) {
       const ratingContentsQueryMap = {
-        images: 3,
+        videosAndImages: 3,
+        images: 2,
         comments: 1,
         all: 0,
       };
@@ -81,7 +82,7 @@ const compareProductCard = ({
         itemid: selectedItem.itemid,
         shopid: selectedItem.shopid,
         limit: RATINGS_LIMIT_PER_PAGE,
-        offset: RATINGS_LIMIT_PER_PAGE + RATINGS_LIMIT_PER_PAGE * ratingsPage,
+        offset: RATINGS_LIMIT_PER_PAGE - RATINGS_LIMIT_PER_PAGE * ratingsPage,
         filter: ratingContentsQueryMap[ratingsContentFilter],
         type: ratingsType,
       });
@@ -90,6 +91,7 @@ const compareProductCard = ({
 
   useEffect(() => {
     const ratingContentsQueryMap = {
+      videosAndImages: 3,
       images: 3,
       comments: 1,
       all: 0,
@@ -107,7 +109,7 @@ const compareProductCard = ({
         itemid: selectedItem.itemid,
         shopid: selectedItem.shopid,
         limit: RATINGS_LIMIT_PER_PAGE,
-        offset: RATINGS_LIMIT_PER_PAGE + RATINGS_LIMIT_PER_PAGE * ratingsPage,
+        offset: RATINGS_LIMIT_PER_PAGE - RATINGS_LIMIT_PER_PAGE * ratingsPage,
         filter: ratingContentsQueryMap[ratingsContentFilter],
         type: ratingsType,
       },
@@ -157,7 +159,9 @@ const compareProductCard = ({
             fontSize={isMobile ? "lg" : "2xl"}
             lineHeight="1rem"
             noOfLines={2}>
-            {selectedItem.price / 100000}
+            {Math.floor(selectedItem.price / 100000).toString().length > 4
+              ? kFormat(Math.floor(selectedItem.price / 100000))
+              : Math.floor(selectedItem.price / 100000)}
           </Text>
         </Box>
         <Text fontSize="md" lineHeight="1rem" noOfLines={2}>
@@ -180,13 +184,15 @@ const compareProductCard = ({
       </Flex>
       <Flex p={isMobile ? 2 : "4"} flexWrap="wrap" flexDirection="row" my="4">
         {selectedItem.type === "detailed" && selectedItem.fetchStatus === "fulfilled" ? (
+          selectedItem.models &&
+          selectedItem.models.length > 1 &&
           selectedItem.models.map((m) => (
             <Box
+              key={m.name}
               rounded="sm"
               border="1px"
               borderColor="gray.500"
               shadow="sm"
-              key={m.name}
               p="2px"
               px="6px"
               m="1"
@@ -206,7 +212,7 @@ const compareProductCard = ({
             </Box>
           ))
         ) : (
-          <Skeleton w="full" h="100px" />
+          <Skeleton p={isMobile ? 2 : "4"} w="full" h="100px" />
         )}
       </Flex>
       {selectedItem.type === "detailed" && selectedItem.shop.fetchStatus === "fulfilled" ? (
@@ -313,7 +319,7 @@ const compareProductCard = ({
             overflow="hidden"
             textOverflow="ellipsis"
             whiteSpace="pre-wrap">
-            {selectedItem.description}
+            {selectedItem.description && selectedItem.description.toString()}
           </Text>
         ) : (
           <Skeleton w="full" h="500px" />
@@ -405,114 +411,120 @@ const compareProductCard = ({
         shadow="inner"
         display="flex">
         {selectedItem.type === "detailed" && selectedItem.ratings.fetchStatus === "fulfilled" ? (
-          selectedItem.ratings.ratings
-            .slice(
-              ratingsPage === 1 ? 0 : ratingsPage * RATINGS_LIMIT_PER_PAGE - RATINGS_LIMIT_PER_PAGE,
-              RATINGS_LIMIT_PER_PAGE * ratingsPage
-            )
-            .map((r) => (
-              <Flex
-                key={r.author_username}
-                w="100%"
-                justifyContent="start"
-                my="10px"
-                flexDirection="column">
-                <Flex mb="2" justifyContent="start" alignItems="center" flexDirection="row">
-                  {r.author_portrait ? (
-                    <Box
-                      as="img"
-                      src={`https://cf.shopee.ph/file/${r.author_portrait}`}
-                      h="40px"
-                      w="40px"
-                      rounded="full"
-                    />
-                  ) : (
-                    <Box
-                      h="40px"
-                      w="40px"
-                      rounded="full"
-                      bgGradient="linear(to-b, blue.300, blue.500)"
-                    />
-                  )}
-                  <Flex ml="2" flexDirection="column">
-                    <Text fontSize="xs">{r.author_username}</Text>
-                    <Text fontSize="xs" fontWeight="bold">
-                      {r.rating_star.toFixed(1)}
-                    </Text>
-                  </Flex>
-                </Flex>
-                <Box w="80%" ml="auto">
-                  <Text
-                    whiteSpace="pre-wrap"
-                    noOfLines={4}
-                    flexGrow={1}
-                    fontSize="sm"
-                    marginY="2"
-                    px="1">
-                    {r.comment}
-                  </Text>
-                  {r.images && r.images.length > 0 && (
-                    <Flex w="full" overflow="visible" z="40" flexDirection="row" flexWrap="wrap">
-                      {r.images.slice(0, 5).map((i) => (
-                        <Box key={i} w="auto" position="relative" mb="1">
-                          <Box
-                            onMouseOver={() => setRatingImageDisplay(i)}
-                            onMouseLeave={() => setRatingImageDisplay("")}
-                            as="img"
-                            src={`https://cf.shopee.ph/file/${i}`}
-                            zIndex="4"
-                            cursor="pointer"
-                            minW="60px"
-                            maxW="60px"
-                            h="60px"
-                            mx="1"
-                            bg="white"
-                            border="2px"
-                            borderColor="gray.600"
-                          />
-
-                          <AnimatePresence>
-                            {ratingImageDisplay === i && (
-                              <MotionBox
-                                bottom="60px"
-                                position="absolute"
-                                initial={{
-                                  opacity: 0,
-                                  x: 0,
-                                  width: 60,
-                                  height: 60,
-                                }}
-                                exit={{
-                                  opacity: 0,
-                                  x: 0,
-                                  width: 60,
-                                  height: 60,
-                                }}
-                                animate={{
-                                  opacity: 1,
-                                  x: -100,
-                                  width: 250,
-                                  height: 250,
-                                }}
-                                // @ts-ignore
-                                transition={{ type: "tween", duration: 0.2 }}
-                                shadow="lg">
-                                <Box
-                                  as="img"
-                                  w="full"
-                                  h="full"
-                                  src={`https://cf.shopee.ph/file/${i}`}
-                                />
-                              </MotionBox>
-                            )}
-                          </AnimatePresence>
-                        </Box>
-                      ))}
+          selectedItem.ratings.ratings.length > 1 ? (
+            selectedItem.ratings.ratings
+              .slice(
+                ratingsPage === 1
+                  ? 0
+                  : ratingsPage * RATINGS_LIMIT_PER_PAGE - RATINGS_LIMIT_PER_PAGE,
+                RATINGS_LIMIT_PER_PAGE * ratingsPage
+              )
+              .map((r) => (
+                <Flex
+                  key={r.author_username}
+                  w="100%"
+                  justifyContent="start"
+                  my="10px"
+                  flexDirection="column">
+                  <Flex mb="2" justifyContent="start" alignItems="center" flexDirection="row">
+                    {r.author_portrait ? (
+                      <Box
+                        as="img"
+                        src={`https://cf.shopee.ph/file/${r.author_portrait}`}
+                        h="40px"
+                        w="40px"
+                        bg="gray.500"
+                        rounded="full"
+                      />
+                    ) : (
+                      <User width="40px" h="40px" color="gray.500" />
+                    )}
+                    <Flex ml="2" flexDirection="column">
+                      <Text fontSize="xs">{r.author_username}</Text>
+                      <Text fontSize="xs" fontWeight="bold">
+                        {r.rating_star.toFixed(1)}
+                      </Text>
                     </Flex>
-                  )}
-                </Box>
-              </Flex>
-            ))
+                  </Flex>
+                  <Box w="80%" ml="auto">
+                    <Text
+                      whiteSpace="pre-wrap"
+                      noOfLines={4}
+                      flexGrow={1}
+                      fontSize="sm"
+                      marginY="2"
+                      px="1">
+                      {r.comment}
+                    </Text>
+                    {r.images && r.images.length > 0 && (
+                      <Flex w="full" overflow="visible" z="40" flexDirection="row" flexWrap="wrap">
+                        {r.images.slice(0, 5).map((i) => (
+                          <Box key={i} w="auto" position="relative" mb="1">
+                            <Box
+                              onMouseOver={() => setRatingImageDisplay(i)}
+                              onMouseLeave={() => setRatingImageDisplay("")}
+                              as="img"
+                              src={`https://cf.shopee.ph/file/${i}`}
+                              zIndex="4"
+                              cursor="pointer"
+                              minW="60px"
+                              maxW="60px"
+                              h="60px"
+                              mx="1"
+                              bg="white"
+                              border="2px"
+                              borderColor="gray.600"
+                            />
+
+                            <AnimatePresence>
+                              {ratingImageDisplay === i && (
+                                <MotionBox
+                                  bottom="60px"
+                                  position="absolute"
+                                  initial={{
+                                    opacity: 0,
+                                    x: 0,
+                                    width: 60,
+                                    height: 60,
+                                  }}
+                                  exit={{
+                                    opacity: 0,
+                                    x: 0,
+                                    width: 60,
+                                    height: 60,
+                                  }}
+                                  animate={{
+                                    opacity: 1,
+                                    x: -100,
+                                    width: 250,
+                                    height: 250,
+                                  }}
+                                  // @ts-ignore
+                                  transition={{ type: "tween", duration: 0.2 }}
+                                  shadow="lg">
+                                  <Box
+                                    as="img"
+                                    w="full"
+                                    h="full"
+                                    src={`https://cf.shopee.ph/file/${i}`}
+                                  />
+                                </MotionBox>
+                              )}
+                            </AnimatePresence>
+                          </Box>
+                        ))}
+                      </Flex>
+                    )}
+                  </Box>
+                </Flex>
+              ))
+          ) : (
+            <Box>
+              <Heading my="10" size="md">
+                Empty
+              </Heading>
+            </Box>
+          )
         ) : (
           <>
             <Skeleton h="200px" w="full" p="4" my="4">

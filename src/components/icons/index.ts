@@ -15,3 +15,4 @@ export { default as Close } from "./close";
 export { default as Clipboard } from "./clipboard";
 export { default as Home } from "./home";
 export { default as Settings } from "./settings";
+export { default as User } from "./user";

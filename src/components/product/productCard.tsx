@@ -57,7 +57,10 @@ const productCard = ({ item, addToSelectedItems, removeToSelectedItems, selected
         <Box my="2">
           <Flex my="1" alignItems="center" justifyContent="space-between">
             <Text fontSize="md" lineHeight="1rem" noOfLines={2}>
-              ₱{item.price / 100000}
+              ₱
+              {Math.floor(item.price / 100000).toString().length > 4
+                ? kFormat(Math.floor(item.price / 100000))
+                : Math.floor(item.price / 100000)}
             </Text>
             <Text fontSize="sm" lineHeight="1rem" noOfLines={2}>
               {kFormat(item.sold)}{" "}
