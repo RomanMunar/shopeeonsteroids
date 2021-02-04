@@ -14,8 +14,8 @@ export default async (req: NowRequest, res: NowResponse) => {
     limit: string;
     newest: string; // limit * page == newest, like offset
     order: string;
-    min_price: string;
-    max_price: string;
+    price_min: string;
+    price_max: string;
     match_id: string;
     rating_filter: string;
     pay_cod: string;

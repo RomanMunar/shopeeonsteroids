@@ -36,9 +36,9 @@ export const fetchSearch = createAsyncThunk<
   SearchItem[],
   undefined,
   { rejectValue: string; state: RootState }
->("search/fetchSearch", async (_, { rejectWithValue, getState }) => {
+>("search/fetchSearch", async (_, { rejectWithValue, dispatch, getState }) => {
   const { query } = getState().searchReducer;
-
+  dispatch(resetPage());
   try {
     const items = await searchAPI(query);
     return items;
@@ -52,10 +52,10 @@ const searchShopee = createSlice({
   initialState,
   reducers: {
     setPriceMin(state, { payload }: PayloadAction<{ priceMin: number }>) {
-      state.query.min_price = payload.priceMin;
+      state.query.price_min = payload.priceMin;
     },
     setPriceMax(state, { payload }: PayloadAction<{ priceMax: number }>) {
-      state.query.max_price = payload.priceMax;
+      state.query.price_max = payload.priceMax;
     },
     setKeyword(state, { payload }: PayloadAction<{ keyword: string }>) {
       if (payload.keyword === "") {
@@ -65,6 +65,9 @@ const searchShopee = createSlice({
         return;
       }
       state.query.keyword = payload.keyword.trim().toLowerCase();
+    },
+    resetPage(state) {
+      state.query.newest = 0;
     },
     incrementPage(state) {
       state.query.newest += state.query.limit;
@@ -123,6 +126,7 @@ const searchShopee = createSlice({
     });
     builder.addCase(fetchSearch.rejected, (state, { payload }) => {
       state.fetchStatus = "idle";
+      state.items = [];
       if (payload) {
         state.errors.push(payload);
       } else {
@@ -136,6 +140,7 @@ export const {
   setPriceMin,
   setPriceMax,
   setKeyword,
+  resetPage,
   incrementPage,
   decrementPage,
   setSort,
