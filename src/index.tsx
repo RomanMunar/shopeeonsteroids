@@ -5,9 +5,9 @@ import { Provider } from "react-redux";
 import store from "./App/store";
 const environment = process.env.NODE_ENV;
 
-if (environment !== "production") {
-  makeServer({ environment });
-}
+// if (environment !== "production") {
+//   makeServer({ environment });
+// }
 
 const render = () => {
   const App = require("./App").App;
