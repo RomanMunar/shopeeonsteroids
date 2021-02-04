@@ -1,4 +1,12 @@
-import { Item, ItemDetailed, Rating, SearchItem, ShopBrief, ShopDetailed } from ".";
+import {
+  Item,
+  ItemDetailed,
+  Rating,
+  ItemRatingSummary,
+  SearchItem,
+  ShopBrief,
+  ShopDetailed,
+} from ".";
 
 interface ShopeeResponse {
   error: number | string | null;
@@ -11,8 +19,8 @@ export interface SearchResponse extends ShopeeResponse {
 
 export interface ShopeeRatingResponse extends ShopeeResponse {
   data: {
-    item: Item;
     ratings: Rating[];
+    item_rating_summary: ItemRatingSummary;
   };
 }
 

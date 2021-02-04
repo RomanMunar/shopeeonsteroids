@@ -30,6 +30,13 @@ export interface ItemRating {
   rcount_with_image: number;
 }
 
+export interface ItemRatingSummary {
+  rating_total: number;
+  rcount_with_context: number;
+  rcount_with_image: number;
+  rcount_with_media: number;
+}
+
 export interface Rating {
   anonymous: boolean;
   author_portrait: string;
@@ -123,8 +130,8 @@ export type SearchSort = "relevancy" | "price" | "latest" | "sales";
 export interface SearchQuery {
   keyword: string;
   newest: number;
-  min_price?: number;
-  max_price?: number;
+  price_min?: number;
+  price_max?: number;
   order: "asc" | "desc"; //SearchSort
   by: SearchSort;
   limit: number;
