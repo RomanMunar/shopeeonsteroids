@@ -27,11 +27,16 @@ const howToBookmark: Guide = {
         </Box>
       </ListItem>
       <ListItem>
-        In there you will see your first bookmark, 🎉 HOORAY 🎉
+        You&apos;ve created your first bookmark, 🎉 HOORAY 🎉
+        <br />
         <Box as="img" border="1px" shadow="md" m="4" src="/bookmarkdisplay.png" />
+        To see your bookmarks, go the `Bookmarks` route by clicking the bookmark icon in the side
+        bar.
+        <Box as="img" border="1px" shadow="md" m="4" src="/bookmarkroute.png" />
       </ListItem>
       <ListItem>
-        You may click the `Compare Now` button to go and compare your bookmarked items
+        If You want to use your bookmarked items again, just click the `Compare Now` button to go
+        and compare your bookmarked items
       </ListItem>
     </UnorderedList>
   ),
