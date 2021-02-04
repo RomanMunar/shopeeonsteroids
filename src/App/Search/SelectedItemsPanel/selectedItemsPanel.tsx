@@ -29,6 +29,8 @@ interface Props {
   toFirstItem: (item: any & { itemid: number; shopid: number }) => void;
   toSecondItem: (item: any & { itemid: number; shopid: number }) => void;
   toThirdItem: (item: any & { itemid: number; shopid: number }) => void;
+  toggleSelectedItemsPanelCollapse: () => void;
+  isSelectedItemsPanelCollapsed: boolean;
 }
 
 const selectedItemsPanel = ({
@@ -43,38 +45,36 @@ const selectedItemsPanel = ({
   toSecondItem,
   toThirdItem,
   compareLayout,
+  toggleSelectedItemsPanelCollapse,
+  isSelectedItemsPanelCollapsed,
 }: Props) => {
   const isMobile = useMediaQuery("(max-width: 500px)")[0];
-  const [collapsed, setCollapse] = useState(isMobile);
-  const toggleCollapse = () => setCollapse((p) => !p);
   return (
     <>
       <MotionBox
         animate={{
-          overflowY: collapsed ? "hidden" : "auto",
-          height: isMobile ? (collapsed ? "50px" : "100vh") : "100vh",
-          bottom: isMobile ? (collapsed ? 50 : 0) : 0,
+          width: isSelectedItemsPanelCollapsed ? 0 : isMobile ? "250px" : "350px",
+          height: isMobile ? (isSelectedItemsPanelCollapsed ? "50px" : "100vh") : "100vh",
+          bottom: isMobile ? (isSelectedItemsPanelCollapsed ? 50 : 0) : 0,
         }}
         bg="white"
         right={0}
         // @ts-ignore
         transition={{ type: "tween", duration: 0.2 }}
         zIndex="90"
-        borderLeft={!collapsed && isMobile ? "1px" : 0}
+        borderLeft={!isSelectedItemsPanelCollapsed && isMobile ? "1px" : 0}
         borderColor="gray.300"
-        p={collapsed ? 5 : 0}
-        position={["absolute", "relative"]}
-        overflowX="hidden">
+        p={isSelectedItemsPanelCollapsed ? 5 : 0}
+        //@ts-ignore
+        position={isMobile ? "absolute" : "relative"}
+        overflowY={isSelectedItemsPanelCollapsed ? "hidden" : "auto"}>
         <MotionBox
           animate={{
-            width: collapsed ? 0 : isMobile ? "250px" : "300px",
-            visibility: collapsed ? "hidden" : "visible",
-            opacity: collapsed ? 0 : 1,
+            visibility: isSelectedItemsPanelCollapsed ? "hidden" : "visible",
+            opacity: isSelectedItemsPanelCollapsed ? 0 : 1,
           }}
-          display={collapsed ? "none" : "flex"}
-          flexDirection="column"
-          flex="none"
-          h="100vh">
+          display={isSelectedItemsPanelCollapsed ? "none" : "flex"}
+          flexDirection="column">
           <Box pb={3}>
             <Heading as="h3" size="sm" p={4} alignSelf="start">
               SELECTED ITEMS
@@ -109,7 +109,7 @@ const selectedItemsPanel = ({
                   Empty
                 </Heading>
               ) : (
-                selectedItems.map((item) =>
+                selectedItems.map((item, idx) =>
                   item.fetchStatus !== "pending" ? (
                     <SelectedItemCard
                       removeToSelectedItems={removeToSelectedItems}
@@ -121,7 +121,7 @@ const selectedItemsPanel = ({
                         displayComparePanel && compareLayout === "triple" ? toThirdItem : undefined
                       }
                       item={item}
-                      key={item.itemid}
+                      key={`${item.itemid}-${idx}`}
                     />
                   ) : (
                     <Box p="4" w="100%">
@@ -134,14 +134,14 @@ const selectedItemsPanel = ({
           </Box>
         </MotionBox>
         <MotionBox
-          animate={{ rotate: collapsed ? 0 : -180 }}
+          animate={{ rotate: isSelectedItemsPanelCollapsed ? 0 : -180 }}
           border={isMobile ? "2px" : "0"}
           borderColor={isMobile ? "gray.300" : "0"}
           position="absolute"
           top="8px"
           right="8px"
           as="button"
-          onClick={toggleCollapse}
+          onClick={toggleSelectedItemsPanelCollapse}
           alignItems="center"
           justifyContent="center"
           display="flex"

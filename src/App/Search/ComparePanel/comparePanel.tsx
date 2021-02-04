@@ -53,7 +53,7 @@ const comparePanel = ({
       left="0"
       position="absolute"
       h="full"
-      zIndex="10"
+      zIndex="90"
       bg="white"
       overflowY="hidden">
       <Flex flexDirection="column" position="relative" h="full">
