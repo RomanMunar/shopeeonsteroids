@@ -19,6 +19,8 @@ interface Props {
   guides: Guide[];
   displayedGuide: Guide;
   previewGuide: (item: Guide) => void;
+  collapsed: boolean;
+  toggleCollapse: () => void;
 }
 
 const guidesPanel = ({ guides, displayedGuide, previewGuide }: Props) => {
@@ -41,10 +43,15 @@ const guidesPanel = ({ guides, displayedGuide, previewGuide }: Props) => {
       zIndex="90"
       borderRight={isMobile ? (collapsed ? 0 : "1px") : "1px"}
       borderColor="gray.300"
-      overflowY="hidden"
+      overflowX="hidden"
       h="100vh"
       flexDirection="row">
-      <Flex
+      <MotionBox
+        animate={{
+          visibility: collapsed ? "hidden" : "visible",
+        }}
+        opacity={collapsed ? 0 : 1}
+        display="flex"
         flexDirection="column"
         overflowY="auto"
         h="100vh"
@@ -81,7 +88,7 @@ const guidesPanel = ({ guides, displayedGuide, previewGuide }: Props) => {
             ))}
           </VStack>
         </Box>
-      </Flex>
+      </MotionBox>
       <MotionBox
         animate={{ rotate: collapsed ? -180 : 0 }}
         border={isMobile ? "2px" : "0"}
