@@ -3,7 +3,6 @@ import { NowRequest, NowResponse } from "@vercel/node";
 import fetch from "node-fetch";
 import { SellerLocation, SearchSort } from "../../src/lib/types";
 import { SearchResponse } from "../../src/lib/types/Api";
-import { shopeeUrlV2 } from "../../constants";
 // Already validated query from the client side,
 // but feel free to submit a pr, for revalidating these queries :)
 export default async (req: NowRequest, res: NowResponse) => {
@@ -29,7 +28,7 @@ export default async (req: NowRequest, res: NowResponse) => {
 
   try {
     const data: SearchResponse = await fetch(
-      `${shopeeUrlV2}/search_items/?${parsedQuery}&page_type=search&skip_autocorrect=1&version=2`,
+      `https://shopee.ph/api/v2/search_items/?${parsedQuery}&page_type=search&skip_autocorrect=1&version=2`,
       {
         headers: {
           accept: "*/*",

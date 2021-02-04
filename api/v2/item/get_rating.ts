@@ -3,7 +3,6 @@ import queryString from "query-string";
 import fetch from "node-fetch";
 import { SellerLocation } from "../../../src/lib/types";
 import { ShopeeRatingResponse } from "../../../src/lib/types/Api";
-import { shopeeUrlV2 } from "../../../constants";
 
 export default async (req: NowRequest, res: NowResponse) => {
   const query = req.query as {
@@ -27,7 +26,7 @@ export default async (req: NowRequest, res: NowResponse) => {
 
   try {
     const response: ShopeeRatingResponse = await fetch(
-      `${shopeeUrlV2}/item/get_ratings?${parsedQuery}&flag=1`
+      `https://shopee.ph/api/v2/item/get_ratings?${parsedQuery}&flag=1`
     ).then((res) => res.json());
 
     const { data, error, error_msg } = response;
