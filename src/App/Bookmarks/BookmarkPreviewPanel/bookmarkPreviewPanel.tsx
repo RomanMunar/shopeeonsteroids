@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Heading, Text, useMediaQuery } from "@chakra-ui/react";
-import { ArrowNext, ArrowRight } from "src/components/icons";
+import { ArrowNext } from "src/components/icons";
 import { SelectedItemCard } from "src/components/product";
 import { BookmarkItem } from "src/lib/types";
 
