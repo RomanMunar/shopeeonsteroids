@@ -39,7 +39,7 @@ import {
   showBookmarkFormModal,
   toggleFilterPanel,
   tripleCompareLayout,
-  collapseFilterPanel,
+  toggleSelectedItemsPanel,
 } from "src/slices/ui/UISlice";
 import useClippy from "use-clippy";
 import { RootState } from "../rootReducer";
@@ -56,6 +56,7 @@ const Search = () => {
     displayComparePanel,
     compareLayout,
     isFilterPanelCollapsed,
+    isSelectedItemsPanelCollapsed,
     displayModal,
     modalView,
   } = useSelector((state: RootState) => state.UIReducer);
@@ -127,6 +128,7 @@ const Search = () => {
     dispatch(selectItem({ item }));
   };
   const toggleFilterPanelCollapse = () => dispatch(toggleFilterPanel());
+  const toggleSelectedItemsPanelCollapse = () => dispatch(toggleSelectedItemsPanel());
   const collapseFilter = () => {
     dispatch(collapseFilter());
   };
@@ -172,7 +174,7 @@ const Search = () => {
     dispatch(toThird({ item }));
   };
   const removeToSelectedItems = (selectedItem: any & { itemid: number; shopid: number }) => {
-    if (selectedItems.length <= 2) {
+    if (displayComparePanel && selectedItems.length <= 2) {
       toast({
         position: "top",
         description: "Must have atleast two items.",
@@ -228,12 +230,17 @@ const Search = () => {
   const toggleCODOnly = () => dispatch(toggleCOD());
   const setSort = (by: SearchSort) => dispatch(sortSet({ by }));
   const setOrder = (order: "asc" | "desc") => dispatch(orderSet({ order }));
+
   const incrementPage = () => dispatch(pageIncrement());
   const decrementPage = () => {
     if (query.newest <= 0) return;
     dispatch(pageDecrement());
   };
-  useEffect(() => console.log({ query }), [query]);
+  useEffect(() => {
+    if (query.keyword === "") return;
+    search();
+  }, [query]);
+
   useEffect(() => {
     if (isFromBookmarks) {
       // Sync items if items are from a bookmark
@@ -270,10 +277,10 @@ const Search = () => {
               setRatingFilter={setRatingFilter}
               toggleShopeeVerifiedOnly={toggleShopeeVerifiedOnly}
               toggleCODOnly={toggleCODOnly}
-              query={query}
-              collapsed={isFilterPanelCollapsed}
               toggleCollapse={toggleFilterPanelCollapse}
+              collapsed={isFilterPanelCollapsed}
               collapseFilter={collapseFilter}
+              query={query}
             />
             <SearchPanel
               openComparePanel={openComparePanel}
@@ -283,7 +290,6 @@ const Search = () => {
               errors={errors}
               fetchStatus={fetchStatus}
               items={items}
-              search={search}
               query={query}
               setKeyword={setKeyword}
               setSort={setSort}
@@ -320,6 +326,8 @@ const Search = () => {
         removeToSelectedItems={removeToSelectedItems}
         isEmpty={isEmpty}
         compareLayout={compareLayout}
+        toggleSelectedItemsPanelCollapse={toggleSelectedItemsPanelCollapse}
+        isSelectedItemsPanelCollapsed={isSelectedItemsPanelCollapsed}
       />
     </Flex>
   );

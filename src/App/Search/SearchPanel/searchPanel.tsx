@@ -4,12 +4,12 @@ import {
   ButtonGroup,
   Flex,
   Heading,
-  HStack,
   IconButton,
   Input,
   InputGroup,
   InputLeftElement,
   Text,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { ArrowNext, Search } from "src/components/icons";
@@ -27,7 +27,6 @@ interface Props {
   query: SearchQuery;
   addToSelectedItems: (item: SearchItem) => void;
   removeToSelectedItems: (selectedItem: any & { itemid: number; shopid: number }) => void;
-  search: () => void;
   decrementPage: () => void;
   openComparePanel: () => void;
   incrementPage: () => void;
@@ -42,7 +41,6 @@ const searchPanel = ({
   addToSelectedItems,
   removeToSelectedItems,
   selectedItems,
-  search,
   openComparePanel,
   query,
   setSort,
@@ -53,6 +51,7 @@ const searchPanel = ({
   const [mounted, setMounted] = useState(false);
   const selectedItemsIds = selectedItems.map((i) => i.itemid);
   const [localKeyword, setLocalKeyword] = useState("");
+  const isMobile = useMediaQuery("(max-width: 500px)")[0];
   useEffect(() => {
     // delay rendering of heavy components
     setTimeout(() => setMounted(true), 400);
@@ -63,7 +62,6 @@ const searchPanel = ({
 
     if (event.code === "Enter" || event.code === "NumpadEnter") {
       setKeyword(localKeyword);
-      search();
     }
   };
 
@@ -105,7 +103,7 @@ const searchPanel = ({
               />
             </InputGroup>
             <Flex flexDirection={["column", "row"]} my="4" w="full" justifyContent="space-between">
-              <Flex flexDirection={["column", "row"]} alignItems="start">
+              <Flex flexDirection={["column", "row"]} alignItems="center">
                 <Text mx="1" whiteSpace="nowrap">
                   Sort By
                 </Text>
@@ -116,7 +114,7 @@ const searchPanel = ({
                   size={"sm"}
                   variant="outline">
                   {searchSort
-                    .filter((s) => s !== "relevancy")
+                    .filter((s) => (isMobile ? s !== "relevancy" : s))
                     .map((s) => (
                       <Button
                         key={s}
@@ -160,6 +158,7 @@ const searchPanel = ({
           )}
           {mounted && fetchStatus === "idle" && (
             <Flex flexDirection="column" alignItems="center" justifyContent="center" my="10">
+              {query.keyword !== "" && <Heading size="md">No Results for {query.keyword}</Heading>}
               <Heading mb="-10" size="md">
                 Try to Search for `Coffee`
               </Heading>
@@ -169,14 +168,7 @@ const searchPanel = ({
           <Flex p={2} alignItems="center" flexDirection="row" w="full" flexWrap="wrap">
             {mounted &&
               fetchStatus === "pending" &&
-              new Array(12).fill(0).map(() => (
-                <>
-                  <ProductSkeleton />
-                  <ProductSkeleton />
-                  <ProductSkeleton />
-                  <ProductSkeleton />
-                </>
-              ))}
+              new Array(12).fill(0).map((_, idx) => <ProductSkeleton key={idx} />)}
             {mounted &&
               fetchStatus === "fulfilled" &&
               items.map((m) => (
