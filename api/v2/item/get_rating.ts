@@ -14,6 +14,9 @@ export default async (req: NowRequest, res: NowResponse) => {
     filter: string;
     limit: string;
   };
+  if (!query.itemid || !query.shopid) {
+    return res.status(400).json({ error: true, error_msg: "Bad request" });
+  }
   // &type=0 All
   // &type=5 5 stars only
   // &type=5 4 stars only
@@ -21,14 +24,16 @@ export default async (req: NowRequest, res: NowResponse) => {
   // &filter=3 With Media
   // &filter=1 With Comments
   const parsedQuery = queryString.stringify(query);
+
   try {
     const response: ShopeeRatingResponse = await fetch(
-      `${shopeeUrlV2}/item/get_ratings?flag=1&${parsedQuery}`
+      `${shopeeUrlV2}/item/get_ratings?${parsedQuery}&flag=1`
     ).then((res) => res.json());
 
     const { data, error, error_msg } = response;
 
-    const newData = data.ratings.map((rating) => {
+    const item_rating_summary = data.item_rating_summary;
+    const ratings = data.ratings.map((rating) => {
       return {
         anonymous: rating.anonymous,
         author_portrait: rating.author_portrait,
@@ -41,7 +46,7 @@ export default async (req: NowRequest, res: NowResponse) => {
       };
     });
 
-    res.status(200).json({ data: newData, error, error_msg });
+    res.status(200).json({ data: { item_rating_summary, ratings }, error, error_msg });
   } catch (e) {
     console.error("Engk! " + e.message);
     res.status(500).send("Error");
