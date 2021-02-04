@@ -7,11 +7,8 @@ import {
   FormControl,
   FormLabel,
   Heading,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
-  NumberInputStepper,
   Text,
   useMediaQuery,
   VStack,
@@ -44,7 +41,7 @@ const filterPanel = ({
   toggleShopeeVerifiedOnly,
   toggleCODOnly,
 }: Props) => {
-  const [[minPrice, maxPrice], setPrice] = useState([query.min_price, query.max_price]);
+  const [[minPrice, maxPrice], setPrice] = useState([query.price_min, query.price_max]);
   const onPriceRangeSubmit = () => {
     setPriceRange(minPrice, maxPrice);
   };
@@ -66,7 +63,7 @@ const filterPanel = ({
         display="flex"
         position={["absolute", "relative"]}
         flexDirection="row"
-        zIndex="90"
+        zIndex="80"
         p={5}
         justifyContent="space-between"
         alignItems="start">
@@ -83,7 +80,7 @@ const filterPanel = ({
           </Heading>
           <Box>
             <VStack my="4" display="flex" flexDirection="column" spacing="20px">
-              <FormControl id="price">
+              <FormControl>
                 <FormLabel>Shipped From</FormLabel>
                 <Flex flexDirection="column" alignItems="start" justifyContent="space-between">
                   {locations.map((l) => (
@@ -128,29 +125,21 @@ const filterPanel = ({
                   ))}
                 </Flex>
               </FormControl>
-              <FormControl id="price">
+              <FormControl>
                 <FormLabel>Price range</FormLabel>
                 <Flex alignItems="center" justifyContent="space-between">
                   <NumberInput
                     size="sm"
-                    value={query.min_price}
+                    value={query.price_min}
                     onChange={(e) => setPrice([parseInt(e), maxPrice])}>
-                    <NumberInputField placeholder="Min" w="85px" />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
+                    <NumberInputField id="min-price" placeholder="Min" w="85px" />
                   </NumberInput>
                   <Divider mx={1} />
                   <NumberInput
                     size="sm"
-                    value={query.max_price}
+                    value={query.price_max}
                     onChange={(e) => setPrice([minPrice, parseInt(e)])}>
-                    <NumberInputField placeholder="Max" w="85px" />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
+                    <NumberInputField id="max-price" placeholder="Max" w="85px" />
                   </NumberInput>
                 </Flex>
                 <Button
