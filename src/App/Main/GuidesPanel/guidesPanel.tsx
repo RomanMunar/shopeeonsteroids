@@ -1,13 +1,12 @@
 import {
   Box,
-  Flex,
   Heading,
   Input,
   InputGroup,
   InputLeftElement,
   StackDivider,
-  VStack,
   useMediaQuery,
+  VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { MotionBox } from "src/components";

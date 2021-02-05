@@ -9,8 +9,6 @@ interface Props {
 }
 
 const rightPanel = ({ displayedBookmark, compareBookmarkItems }: Props) => {
-  const isMobile = useMediaQuery("(max-width: 500px)")[0];
-
   return (
     <Flex flexDirection="column" overflowY="auto" pt="5" flex="1" borderColor="blue.300">
       <Flex

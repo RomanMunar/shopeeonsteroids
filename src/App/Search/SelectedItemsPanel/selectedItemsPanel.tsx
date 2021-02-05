@@ -6,10 +6,9 @@ import {
   Skeleton,
   StackDivider,
   Text,
-  VStack,
   useMediaQuery,
+  VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
 import { BookmarkFormView, MotionBox } from "src/components";
 import { ArrowRight, Bookmark } from "src/components/icons";
 import { SelectedItemCard } from "src/components/product";
