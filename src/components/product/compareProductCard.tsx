@@ -357,17 +357,17 @@ const compareProductCard = ({
             <Text fontWeight="semibold">Contains</Text>
             <ButtonGroup mb="4" size={isMobile ? "xs" : "sm"} isAttached variant="outline">
               <Button
-                color={ratingsContentFilter === "images" ? "gray.600" : "gray.800"}
+                color={ratingsContentFilter === "images" ? "blue.600" : "gray.800"}
                 onClick={() => setRatingsContentFilter("images")}>
                 {isMobile ? "Images" : "With Images"}
               </Button>
               <Button
-                color={ratingsContentFilter === "comments" ? "gray.600" : "gray.800"}
+                color={ratingsContentFilter === "comments" ? "blue.600" : "gray.800"}
                 onClick={() => setRatingsContentFilter("comments")}>
                 {isMobile ? "Comments" : "With Comments"}
               </Button>
               <Button
-                color={ratingsContentFilter === "all" ? "gray.600" : "gray.800"}
+                color={ratingsContentFilter === "all" ? "blue.600" : "gray.800"}
                 onClick={() => setRatingsContentFilter("all")}>
                 All
               </Button>
@@ -380,14 +380,14 @@ const compareProductCard = ({
                 {[1, 2, 3, 4, 5].map((r) => (
                   <Button
                     key={r}
-                    color={ratingsType === r ? "gray.600" : "gray.800"}
+                    color={ratingsType === r ? "blue.600" : "gray.800"}
                     onClick={() => setRatingsType(r)}>
                     {r}
                     <Star width="12px" height="12px" />
                   </Button>
                 ))}
                 <Button
-                  color={ratingsType === 0 ? "gray.600" : "gray.800"}
+                  color={ratingsType === 0 ? "blue.600" : "gray.800"}
                   onClick={() => setRatingsType(0)}>
                   All
                 </Button>
@@ -437,7 +437,7 @@ const compareProductCard = ({
                         rounded="full"
                       />
                     ) : (
-                      <User width="40px" h="40px" color="gray.500" />
+                      <User style={{ padding: "10px" }} width="30px" h="30px" color="#545F71" />
                     )}
                     <Flex ml="2" flexDirection="column">
                       <Text fontSize="xs">{r.author_username}</Text>
