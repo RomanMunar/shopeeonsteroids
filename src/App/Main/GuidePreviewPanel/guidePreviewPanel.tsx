@@ -24,7 +24,13 @@ const guidePreviewPanel = ({ displayedGuide }: Props) => {
         </Box>
       </Flex>
       <Box flex="1" p="8" borderY="1px" borderColor="gray.400" bg="gray.50" shadow="inner">
-        <Flex flexWrap="wrap" flexDirection="row" justifyContent="flex-start" h="auto" maxW="5xl">
+        <Flex
+          flexWrap="wrap"
+          flexDirection="row"
+          justifyContent="flex-start"
+          h="auto"
+          maxW="5xl"
+          pb="20">
           {displayedGuide.body}
         </Flex>
       </Box>

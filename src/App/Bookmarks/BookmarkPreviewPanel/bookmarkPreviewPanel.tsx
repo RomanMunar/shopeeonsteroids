@@ -38,14 +38,7 @@ const rightPanel = ({ displayedBookmark, compareBookmarkItems }: Props) => {
           Compare Now
         </Button>
       </Flex>
-      <Box
-        h="full"
-        p="8"
-        borderY="1px"
-        borderColor="gray.400"
-        bg="gray.50"
-        shadow="inner"
-        pb={isMobile ? "100px" : 0}>
+      <Box h="full" p="8" borderY="1px" borderColor="gray.400" bg="gray.50" shadow="inner" pb="20">
         <Flex
           flexWrap="wrap"
           flexDirection="row"
