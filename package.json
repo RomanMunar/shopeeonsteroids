@@ -24,6 +24,7 @@
     "@vercel/node": "^1.9.0",
     "faker": "^5.1.0",
     "framer-motion": "^3.2.1",
+    "fuse.js": "^6.4.6",
     "history": "^5.0.0",
     "miragejs": "^0.1.41",
     "node-fetch": "^2.6.1",

@@ -200,23 +200,25 @@ export const selectedItemsShopee = createSlice({
       const { item } = action.payload;
       const itemIndex = state.selectedItems.findIndex((i) => item.itemid === i.itemid);
       if (itemIndex === -1) return;
-      state.selectedItems = [item, ...state.selectedItems.filter((i) => i.itemid !== item.itemid)];
+      const prevItem = state.selectedItems[itemIndex];
+      state.selectedItems[itemIndex] = state.selectedItems[0];
+      state.selectedItems[0] = prevItem;
     },
     toSecond(state, action: PayloadAction<{ item: any & { itemid: number; shopid: number } }>) {
       const { item } = action.payload;
       const itemIndex = state.selectedItems.findIndex((i) => item.itemid === i.itemid);
       if (itemIndex === -1) return;
-      const [firstEl, ...rest] = state.selectedItems.filter((i) => i.itemid !== item.itemid);
-      state.selectedItems = [firstEl, item, ...rest];
+      const prevItem = state.selectedItems[itemIndex];
+      state.selectedItems[itemIndex] = state.selectedItems[1];
+      state.selectedItems[1] = prevItem;
     },
     toThird(state, action: PayloadAction<{ item: any & { itemid: number; shopid: number } }>) {
       const { item } = action.payload;
       const itemIndex = state.selectedItems.findIndex((i) => item.itemid === i.itemid);
       if (itemIndex === -1) return;
-      const [firstEl, secondEl, ...rest] = state.selectedItems.filter(
-        (i) => i.itemid !== item.itemid
-      );
-      state.selectedItems = [firstEl, secondEl, item, ...rest];
+      const prevItem = state.selectedItems[itemIndex];
+      state.selectedItems[itemIndex] = state.selectedItems[2];
+      state.selectedItems[2] = prevItem;
     },
     setSessionID(state, action: PayloadAction<{ sessionID: number }>) {
       state.sessionID = action.payload.sessionID;
