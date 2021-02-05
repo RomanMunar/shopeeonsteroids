@@ -67,7 +67,7 @@ const leftPanel = ({
                 searchBookmarks(e.target.value);
               }}
               type="text"
-              placeholder="Coffee..."
+              placeholder="Mechanical keyboard..."
             />
           </InputGroup>
         </Box>

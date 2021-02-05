@@ -71,7 +71,7 @@ const guidesPanel = ({ guides, displayedGuide, searchGuides, previewGuide }: Pro
             <Input
               onChange={(e) => searchGuides(e.target.value)}
               type="text"
-              placeholder="Coffee..."
+              placeholder="How to search..."
             />
           </InputGroup>
         </Box>
