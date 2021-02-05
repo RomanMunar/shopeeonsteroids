@@ -129,7 +129,7 @@ const searchPanel = ({
                 </ButtonGroup>
               </Flex>
               <Flex mt={[2, 0]} alignSelf="flex-end" alignItems="center">
-                <Text mx="1">Page {query.newest / searchItemLimitPerPage}</Text>
+                <Text mx="1">Page {query.newest / searchItemLimitPerPage + 1}</Text>
                 <ButtonGroup size="sm" isAttached variant="outline">
                   <IconButton
                     onClick={decrementPage}
