@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Popover,
   PopoverArrow,
@@ -69,18 +70,21 @@ const nav = () => {
             whileHover={{ scale: 1.1 }}
             // @ts-ignore
             transition={{ type: "tween", duration: 0.1 }}
-            py="2"
-            px="3"
-            mb="1"
-            alignItems="center"
-            justifyContent="center"
-            w="35px"
-            h="35px"
-            rounded="full"
-            bgGradient="linear(to-br, blue.300, blue.500)">
-            <Text color="white" fontSize="lg" fontWeight="600">
-              ME
-            </Text>
+            mb="1">
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              w="30px"
+              h="30px"
+              rounded="full"
+              bgGradient="linear(to-br, blue.300, blue.500)"
+              py="2"
+              px="3">
+              <Text color="white" fontSize="sm" fontWeight="600">
+                ME
+              </Text>
+            </Box>
           </MotionBox>
         </PopoverTrigger>
         <Portal>
@@ -89,8 +93,8 @@ const nav = () => {
             <PopoverHeader>🎉🎉 Hi, I&apos;m Roman Munar</PopoverHeader>
             <PopoverCloseButton />
             <PopoverBody>
-              a Filipino Web Developer and UX Designer based in Philippines. I also write content
-              about software development toolings and frameworks.
+              a Filipino Web Developer and design enthusiast based in Philippines. I also write
+              content about software development toolings and frameworks.
               <a href="https://romanmunar.netlify.app/about#contact-me">
                 <Text color="blue.500">Contact Me</Text>
               </a>
